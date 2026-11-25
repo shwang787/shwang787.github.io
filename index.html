@@ -1,61 +1,1758 @@
-<script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>双黄集团 · 双黄网 | 官方网站</title>
+<meta name="description" content="双黄集团官方门户网站——双黄网，精选优质互联网平台，为学习、创作与娱乐提供一站式入口。" />
 
-let name=prompt("你的名字是:")
-alert("欢迎访问，"+name)
+<!-- 先于渲染读取玻璃透明度，避免闪烁 -->
+<script>
+(function () {
+  try {
+    var v = localStorage.getItem('sh_glass_alpha');
+    if (v !== null && !isNaN(parseFloat(v))) {
+      document.documentElement.style.setProperty('--glass-alpha', String(parseFloat(v)));
+    }
+  } catch (e) {}
+})();
 </script>
 
-<head>
-<meta name="viewport" content="width=device-width，initial-scale=1">
-<title>双黄网</title>
 <style>
-   body{
-      background:gray;
-   }
-   
-    .a{
-       color:yellow;
-       background:black;
-       text-align:center;
-       font-size:50px;
-       
-       border-radius:50px
-    }
-    
-    .b{
-      color:white;
-      backgroud:yellow;
-      text-align:center;
-      font-size:50px;
-      
-      border-radius:50px
-    }
-    
-</style>
+  /* ============ 基础变量与重置 ============ */
+  :root {
+    --brand: #F5B301;
+    --brand-light: #FFD34D;
+    --ink: #12161F;
+    --ink-soft: #1C2333;
+    --muted: #5A6472;
+    --line: rgba(18, 22, 31, .08);
+    --bg: #F7F8FA;
+    --card: #FFFFFF;
+    --radius: 18px;
+    --shadow-sm: 0 4px 16px rgba(18, 22, 31, .06);
+    --shadow-md: 0 14px 40px rgba(18, 22, 31, .10);
 
+    /* 液态玻璃参数：透明度由设置页实时控制 */
+    --glass-alpha: .55;
+    --glass-blur: 28px;
+
+    /* 滑动过渡缓动 */
+    --ease-slide: cubic-bezier(.32, .72, 0, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { height: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
+
+  .container {
+    width: min(1120px, 92%);
+    margin: 0 auto;
+  }
+
+  /* ============ 滑动容器与视图 ============ */
+  .app {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    background: #0b0e14;
+  }
+
+  .view {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    background: var(--bg);
+    transition: transform .48s var(--ease-slide);
+    will-change: transform;
+  }
+
+  .view-home { transform: translateX(0); }
+  .view-settings { transform: translateX(100%); }
+
+  .app.is-settings .view-home { transform: translateX(-25%); }
+  .app.is-settings .view-settings { transform: translateX(0); }
+
+  /* 旧页面变暗遮罩：仅在进入设置页时显现 */
+  .view-home::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .32);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .48s var(--ease-slide);
+    z-index: 999;
+  }
+  .app.is-settings .view-home::before { opacity: 1; }
+
+  /* 初始加载时禁用过渡，避免闪动 */
+  .app.no-transition .view,
+  .app.no-transition .view-home::before {
+    transition: none !important;
+  }
+
+  /* ============ 液态玻璃（实时渲染） ============ */
+  .glass {
+    position: relative;
+    isolation: isolate;
+    background: rgba(255, 255, 255, var(--glass-alpha));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(190%) brightness(1.08);
+    backdrop-filter: blur(var(--glass-blur)) saturate(190%) brightness(1.08);
+    border: 1px solid rgba(255, 255, 255, .5);
+  }
+
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 90% at 10% 0%,   rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 58%),
+      radial-gradient(95% 75% at 88% 100%,  rgba(255, 255, 255, .60), rgba(255, 255, 255, 0) 62%),
+      radial-gradient(70% 120% at 50% 45%,  rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 72%);
+    filter: url(#liquidRefract);
+    opacity: .55;
+    mix-blend-mode: screen;
+  }
+
+  .glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, .95),
+      inset 0 -1px 0 rgba(255, 255, 255, .28),
+      inset 1px 0 0 rgba(255, 255, 255, .45),
+      inset -1px 0 0 rgba(255, 255, 255, .45);
+  }
+
+  .glass > * { position: relative; z-index: 1; }
+
+  .svg-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* ============ 顶部滚动公告条 ============ */
+  .ticker {
+    background: var(--ink);
+    color: var(--brand-light);
+    font-size: 12.5px;
+    letter-spacing: .22em;
+    padding: 8px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .ticker-track {
+    display: inline-block;
+    animation: tickerMove 26s linear infinite;
+  }
+  @keyframes tickerMove {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ============ 导航栏（液态玻璃） ============ */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .45);
+    border-radius: 0;
+    transition: box-shadow .3s ease;
+  }
+  .site-header.scrolled { box-shadow: 0 8px 28px rgba(18, 22, 31, .10); }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+    gap: 20px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-weight: 800;
+    font-size: 19px;
+    letter-spacing: .5px;
+    white-space: nowrap;
+  }
+  .brand-mark {
+    width: 38px; height: 38px;
+    border-radius: 11px;
+    display: grid; place-items: center;
+    font-size: 19px; font-weight: 900;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    box-shadow: 0 6px 18px rgba(245, 179, 1, .38);
+  }
+  .brand small {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 1.4px;
+    line-height: 1;
+    margin-top: 3px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .nav-links a { position: relative; padding: 6px 0; transition: color .2s; }
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 0; height: 2px;
+    background: var(--brand);
+    border-radius: 2px;
+    transition: width .25s ease;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nav-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 20px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    border-radius: 999px;
+    box-shadow: 0 8px 20px rgba(245, 179, 1, .32);
+    transition: transform .2s ease, box-shadow .2s ease;
+    white-space: nowrap;
+  }
+  .nav-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(245, 179, 1, .45);
+  }
+
+  /* 设置按钮 */
+  .icon-btn {
+    flex: none;
+    width: 42px; height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 13px;
+    color: var(--ink);
+    background: rgba(255, 255, 255, .55);
+    border: 1px solid rgba(255, 255, 255, .75);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, .95),
+      0 6px 16px rgba(18, 22, 31, .08);
+    transition: transform .22s ease, background .22s ease, box-shadow .22s ease;
+  }
+  .icon-btn:hover {
+    transform: translateY(-2px) rotate(6deg);
+    background: #fff;
+    box-shadow:
+      inset 0 1px 0 #fff,
+      0 12px 24px rgba(18, 22, 31, .14);
+  }
+  .icon-btn svg { width: 19px; height: 19px; }
+
+  .nav-toggle {
+    display: none;
+    width: 42px; height: 42px;
+    border: 1px solid rgba(255, 255, 255, .75);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .55);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .nav-toggle span {
+    display: block;
+    width: 18px; height: 2px;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: .3s;
+  }
+
+  /* ============ 首屏 Hero ============ */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    padding: 96px 0 104px;
+    background:
+      radial-gradient(900px 480px at 82% -12%, rgba(245, 179, 1, .30), transparent 62%),
+      radial-gradient(700px 420px at 8% 110%, rgba(245, 179, 1, .14), transparent 60%),
+      linear-gradient(160deg, #12161F 0%, #1C2333 58%, #12161F 100%);
+  }
+  .hero::before,
+  .hero::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: .5;
+    pointer-events: none;
+  }
+  .hero::before {
+    width: 320px; height: 320px;
+    top: -90px; right: -60px;
+    background: rgba(245, 179, 1, .35);
+  }
+  .hero::after {
+    width: 240px; height: 240px;
+    bottom: -110px; left: -70px;
+    background: rgba(255, 211, 77, .18);
+  }
+
+  .hero-inner { position: relative; z-index: 1; max-width: 760px; }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .6px;
+    color: var(--brand-light);
+    background: rgba(245, 179, 1, .12);
+    border: 1px solid rgba(245, 179, 1, .35);
+    border-radius: 999px;
+    margin-bottom: 26px;
+  }
+  .hero-badge i {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--brand-light);
+    box-shadow: 0 0 0 4px rgba(255, 211, 77, .18);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: .55; transform: scale(.82); }
+  }
+
+  .hero h1 {
+    font-size: clamp(34px, 5.6vw, 58px);
+    line-height: 1.18;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 22px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(120deg, var(--brand-light), var(--brand));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero p {
+    font-size: clamp(15px, 1.6vw, 17.5px);
+    color: rgba(255, 255, 255, .72);
+    max-width: 620px;
+    margin-bottom: 38px;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 56px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 14px 30px;
+    font-size: 15.5px;
+    font-weight: 700;
+    border-radius: 999px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
+  }
+  .btn-primary {
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    box-shadow: 0 12px 30px rgba(245, 179, 1, .35);
+  }
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 38px rgba(245, 179, 1, .48);
+  }
+  .btn-ghost {
+    color: #fff;
+    background: rgba(255, 255, 255, .06);
+    border-color: rgba(255, 255, 255, .22);
+  }
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, .14);
+    transform: translateY(-3px);
+  }
+
+  /* 双黄工作室专属按钮 */
+  .btn-studio {
+    position: relative;
+    color: var(--brand-light);
+    background: rgba(245, 179, 1, .14);
+    border: 1px solid rgba(245, 179, 1, .55);
+    box-shadow: 0 8px 22px rgba(245, 179, 1, .16);
+  }
+  .btn-studio:hover {
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    border-color: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(245, 179, 1, .40);
+  }
+  .btn-studio::after {
+    content: "官方";
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    padding: 2px 8px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(245, 179, 1, .40);
+    pointer-events: none;
+  }
+  .btn-studio:hover::after {
+    color: var(--brand-light);
+    background: var(--ink);
+  }
+
+  .hero-hint {
+    margin: -38px 0 34px;
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, .55);
+  }
+  .hero-hint a {
+    color: var(--brand-light);
+    font-weight: 700;
+    border-bottom: 1px dashed rgba(255, 211, 77, .45);
+    padding-bottom: 1px;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .hero-hint a:hover {
+    color: #fff;
+    border-bottom-color: #fff;
+  }
+
+  .hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 46px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, .12);
+  }
+  .hero-stats div strong {
+    display: block;
+    font-size: 27px;
+    font-weight: 800;
+    color: var(--brand-light);
+    line-height: 1.2;
+  }
+  .hero-stats div span {
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, .6);
+    letter-spacing: .5px;
+  }
+
+  /* ============ 通用区块 ============ */
+  .section { padding: 92px 0; }
+  .section-head { max-width: 640px; margin-bottom: 52px; }
+  .section-tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2.4px;
+    color: var(--brand);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .section-head h2 {
+    font-size: clamp(25px, 3.4vw, 36px);
+    font-weight: 800;
+    letter-spacing: -.5px;
+    line-height: 1.28;
+    margin-bottom: 14px;
+  }
+  .section-head p {
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  /* ============ 服务优势 ============ */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 22px;
+  }
+  .feature {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 34px 28px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+  }
+  .feature:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(245, 179, 1, .5);
+  }
+  .feature-icon {
+    width: 52px; height: 52px;
+    display: grid; place-items: center;
+    font-size: 23px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(255, 211, 77, .28), rgba(245, 179, 1, .16));
+    border: 1px solid rgba(245, 179, 1, .28);
+    margin-bottom: 20px;
+  }
+  .feature h3 { font-size: 18px; font-weight: 700; margin-bottom: 9px; }
+  .feature p { font-size: 14.5px; color: var(--muted); }
+
+  /* ============ 资源导航卡片 ============ */
+  .links-section {
+    background:
+      radial-gradient(700px 380px at 100% 0%, rgba(245, 179, 1, .10), transparent 65%),
+      #fff;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+    gap: 22px;
+  }
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 30px 26px 26px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--brand-light), var(--brand));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .35s ease;
+  }
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(245, 179, 1, .45);
+  }
+  .card:hover::before { transform: scaleX(1); }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .card-icon {
+    flex: none;
+    width: 50px; height: 50px;
+    display: grid; place-items: center;
+    font-size: 24px;
+    border-radius: 14px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  .card h3 { font-size: 17.5px; font-weight: 700; line-height: 1.3; }
+  .card .site {
+    font-size: 12.5px;
+    color: var(--brand);
+    font-weight: 600;
+    letter-spacing: .4px;
+  }
+  .card p {
+    font-size: 14.5px;
+    color: var(--muted);
+    flex: 1;
+    margin-bottom: 22px;
+  }
+  .card-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .card-go svg { transition: transform .25s ease; }
+  .card:hover .card-go { color: #B8860B; }
+  .card:hover .card-go svg { transform: translateX(5px); }
+
+  /* ============ 联系方式 ============ */
+  .contact-section { padding: 92px 0; }
+
+  .contact-box {
+    position: relative;
+    overflow: hidden;
+    border-radius: 26px;
+    padding: 62px 54px;
+    color: #fff;
+    background:
+      radial-gradient(600px 340px at 88% 0%, rgba(245, 179, 1, .32), transparent 62%),
+      linear-gradient(150deg, #12161F, #1F2739);
+    box-shadow: 0 26px 60px rgba(18, 22, 31, .22);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 36px;
+  }
+  .contact-box::after {
+    content: "";
+    position: absolute;
+    width: 280px; height: 280px;
+    right: -80px; bottom: -140px;
+    border-radius: 50%;
+    background: rgba(245, 179, 1, .16);
+    filter: blur(50px);
+    pointer-events: none;
+  }
+  .contact-text { position: relative; z-index: 1; max-width: 520px; }
+  .contact-text h2 {
+    font-size: clamp(24px, 3.2vw, 34px);
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 14px;
+  }
+  .contact-text p { color: rgba(255, 255, 255, .7); font-size: 15.5px; }
+
+  .contact-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 280px;
+  }
+  .qq-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, .07);
+    border: 1px solid rgba(255, 255, 255, .16);
+    backdrop-filter: blur(6px);
+  }
+  .qq-card .label {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 1.6px;
+    color: rgba(255, 255, 255, .55);
+    margin-bottom: 2px;
+  }
+  .qq-card .value {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: .8px;
+    color: var(--brand-light);
+    font-variant-numeric: tabular-nums;
+  }
+  .copy-btn {
+    flex: none;
+    padding: 9px 18px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform .2s ease, box-shadow .2s ease;
+    box-shadow: 0 8px 20px rgba(245, 179, 1, .3);
+  }
+  .copy-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(245, 179, 1, .42); }
+  .copy-btn:active { transform: translateY(0) scale(.97); }
+
+  /* ============ 页脚 ============ */
+  .site-footer {
+    background: var(--ink);
+    color: rgba(255, 255, 255, .6);
+    padding: 46px 0 34px;
+    font-size: 14px;
+  }
+  .footer-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid rgba(255, 255, 255, .1);
+  }
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 26px;
+  }
+  .footer-links a { transition: color .2s; }
+  .footer-links a:hover { color: var(--brand-light); }
+  .footer-bottom {
+    padding-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, .42);
+  }
+  .site-footer .brand { color: #fff; }
+  .site-footer .brand small { color: rgba(255, 255, 255, .45); }
+
+  /* ============ 滚动入场动画 ============ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .ticker-track { animation: none; }
+    .view { transition: none !important; }
+    .view-home::before { transition: none !important; }
+  }
+
+  /* ============ 设置页样式 ============ */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 14px;
+    height: 66px;
+    padding: 0 max(16px, calc((100vw - 1120px) / 2));
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .45);
+    border-radius: 0;
+  }
+
+  .back-btn {
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    border-radius: 12px;
+    color: var(--ink);
+    background: rgba(255, 255, 255, .55);
+    border: 1px solid rgba(255, 255, 255, .75);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 6px 16px rgba(18, 22, 31, .08);
+    transition: transform .2s ease, background .2s ease;
+  }
+  .back-btn:hover { transform: translateX(-3px); background: #fff; }
+
+  .topbar h1 {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    text-align: center;
+  }
+
+  .topbar .mark {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-size: 17px; font-weight: 900;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    box-shadow: 0 6px 18px rgba(245, 179, 1, .38);
+  }
+
+  .wrap {
+    width: min(920px, 92%);
+    margin: 0 auto;
+    padding-top: 26px;
+    padding-bottom: 60px;
+  }
+
+  /* 预览区 */
+  .preview {
+    position: relative;
+    border-radius: 26px;
+    overflow: hidden;
+    padding: 34px 26px 22px;
+    background: linear-gradient(150deg, #12161F, #1C2333 60%, #12161F);
+    box-shadow: 0 26px 60px rgba(18, 22, 31, .24);
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(34px);
+    opacity: .9;
+  }
+  .o1 { width: 220px; height: 220px; top: -60px; left: -40px; background: rgba(245, 179, 1, .70); }
+  .o2 { width: 200px; height: 200px; top: 20px; right: -50px; background: rgba(255, 211, 77, .55); }
+  .o3 { width: 260px; height: 260px; bottom: -120px; left: 34%; background: rgba(90, 140, 255, .40); }
+
+  .grid-lines {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, .07) 1px, transparent 1px);
+    background-size: 46px 46px;
+    mask-image: radial-gradient(70% 70% at 50% 40%, #000, transparent);
+    -webkit-mask-image: radial-gradient(70% 70% at 50% 40%, #000, transparent);
+  }
+
+  /* 模拟导航栏 */
+  .preview-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    height: 66px;
+    padding: 0 20px;
+    border-radius: 18px;
+    color: var(--ink);
+  }
+
+  .pb-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 15.5px;
+    white-space: nowrap;
+  }
+  .pb-brand i {
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    display: grid; place-items: center;
+    font-style: normal;
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    box-shadow: 0 4px 12px rgba(245, 179, 1, .35);
+  }
+
+  .pb-links {
+    display: flex;
+    gap: 18px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .pb-cta {
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    box-shadow: 0 6px 16px rgba(245, 179, 1, .32);
+    white-space: nowrap;
+  }
+
+  .preview-cap {
+    position: relative;
+    z-index: 1;
+    margin-top: 18px;
+    text-align: center;
+    font-size: 12.5px;
+    letter-spacing: .6px;
+    color: rgba(255, 255, 255, .5);
+  }
+
+  /* 设置面板 */
+  .panel {
+    margin-top: 22px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 30px 28px 26px;
+    box-shadow: 0 10px 30px rgba(18, 22, 31, .06);
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .panel-head h2 {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: .2px;
+  }
+
+  .panel-head output {
+    font-size: 19px;
+    font-weight: 800;
+    color: #B8860B;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .panel-sub {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-bottom: 22px;
+  }
+
+  /* 滑块 */
+  .range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    outline: none;
+    cursor: pointer;
+    background: linear-gradient(90deg, var(--brand-light), var(--brand));
+    box-shadow: inset 0 1px 3px rgba(18, 22, 31, .14);
+  }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid rgba(18, 22, 31, .08);
+    box-shadow:
+      0 4px 14px rgba(18, 22, 31, .22),
+      inset 0 1px 0 #fff;
+    cursor: grab;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .range::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.14);
+    box-shadow: 0 6px 20px rgba(18, 22, 31, .28), inset 0 1px 0 #fff;
+  }
+  .range::-moz-range-thumb {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid rgba(18, 22, 31, .08);
+    box-shadow: 0 4px 14px rgba(18, 22, 31, .22);
+    cursor: grab;
+  }
+  .range:focus-visible {
+    outline: 3px solid rgba(245, 179, 1, .45);
+    outline-offset: 4px;
+  }
+
+  .range-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: .4px;
+  }
+
+  /* 预设 */
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .presets button {
+    flex: 1 1 auto;
+    min-width: 96px;
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    color: var(--ink);
+    background: #F1F3F6;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .2s ease, transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .presets button:hover {
+    background: #E8EBF0;
+    transform: translateY(-2px);
+  }
+  .presets button.active {
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    border-color: rgba(245, 179, 1, .55);
+    box-shadow: 0 8px 20px rgba(245, 179, 1, .34);
+  }
+  .presets button.ghost {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--muted);
+    flex: 0 0 auto;
+  }
+  .presets button.ghost:hover { background: #F1F3F6; color: var(--ink); }
+
+  .hint {
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--muted);
+    padding-top: 18px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 26px;
+    padding: 12px 24px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(18, 22, 31, .06);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .back-link:hover {
+    transform: translateX(-3px);
+    box-shadow: 0 12px 26px rgba(18, 22, 31, .12);
+  }
+
+  /* ============ 响应式 ============ */
+  @media (max-width: 860px) {
+    .nav-links {
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      padding: 12px 5%;
+      background: rgba(255, 255, 255, .92);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 18px 30px rgba(18, 22, 31, .08);
+      display: none;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { width: 100%; padding: 11px 0; font-size: 15.5px; }
+    .nav-toggle { display: flex; }
+    .nav-cta { display: none; }
+
+    .hero { padding: 70px 0 78px; }
+    .hero-stats { gap: 30px; }
+    .section, .contact-section { padding: 68px 0; }
+    .contact-box { padding: 42px 28px; }
+    .contact-actions { width: 100%; min-width: 0; }
+  }
+
+  @media (max-width: 620px) {
+    .preview { padding: 24px 16px 18px; border-radius: 20px; }
+    .preview-bar { padding: 0 14px; gap: 8px; }
+    .pb-links { display: none; }
+    .panel { padding: 24px 20px 22px; }
+    .presets button { min-width: 0; flex: 1 1 42%; }
+  }
+
+  @media (max-width: 420px) {
+    .hero-stats div strong { font-size: 23px; }
+    .btn { width: 100%; }
+    .hero-hint { margin-top: -30px; }
+  }
+</style>
 </head>
 
 <body>
-<div class="a"> 双黄集团官方网页：双黄网</div>
-<div class="b">+QQ:1593661551</div>
 
-<h1>
-<marquee>双黄网 双黄网 双黄网 双黄网 双黄网 双黄网 双黄网 双黄网 双黄网 双黄网</marquee>
-</h1>
+  <!-- 液态玻璃折射滤镜 -->
+  <svg class="svg-defs" aria-hidden="true" focusable="false">
+    <filter id="liquidRefract" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="2" seed="9" result="noise" />
+      <feGaussianBlur in="noise" stdDeviation="2.2" result="softNoise" />
+      <feDisplacementMap in="SourceGraphic" in2="softNoise" scale="26"
+                         xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
 
-<h1>
-<a href="https://shequ.codemao.cn">点击跳转：编程猫社区</a>
-</h1>
+  <div class="app no-transition" id="app">
 
-<h1>
-<a href="https://poki.com">点击跳转：poki 小游戏社区</a>
-</h1>
+    <!-- ================================================== -->
+    <!-- 视图一：首页 -->
+    <!-- ================================================== -->
+    <div class="view view-home" id="viewHome">
 
-<h1>
-<a href="https://draw.io">点击跳转：流程图工具</a>
-</h1>
+      <!-- 顶部滚动公告 -->
+      <div class="ticker" aria-hidden="true">
+        <div class="ticker-track">
+          <span>双黄网 &nbsp;·&nbsp; 双黄集团官方门户 &nbsp;·&nbsp; 精选优质平台 &nbsp;·&nbsp; 一站式直达 &nbsp;·&nbsp; 用心服务每一位用户 &nbsp;·&nbsp; 双黄网 &nbsp;·&nbsp; 双黄集团官方门户 &nbsp;·&nbsp; 精选优质平台 &nbsp;·&nbsp; 一站式直达 &nbsp;·&nbsp; 用心服务每一位用户 &nbsp;·&nbsp;</span>
+          <span>双黄网 &nbsp;·&nbsp; 双黄集团官方门户 &nbsp;·&nbsp; 精选优质平台 &nbsp;·&nbsp; 一站式直达 &nbsp;·&nbsp; 用心服务每一位用户 &nbsp;·&nbsp; 双黄网 &nbsp;·&nbsp; 双黄集团官方门户 &nbsp;·&nbsp; 精选优质平台 &nbsp;·&nbsp; 一站式直达 &nbsp;·&nbsp; 用心服务每一位用户 &nbsp;·&nbsp;</span>
+        </div>
+      </div>
 
-<h1>
-<a href="https://github.com">点击跳转：GitHub社区</a>
-</h1>
+      <!-- 导航栏（液态玻璃） -->
+      <header class="site-header glass" id="header">
+        <div class="container nav">
+          <a href="#top" class="brand">
+            <span class="brand-mark">双</span>
+            <span>
+              双黄集团
+              <small>SHUANGHUANG GROUP</small>
+            </span>
+          </a>
 
+          <nav class="nav-links" id="navLinks">
+            <a href="#top">首页</a>
+            <a href="#about">关于我们</a>
+            <a href="#resources">资源导航</a>
+            <a href="#contact">联系我们</a>
+          </nav>
+
+          <div class="nav-actions">
+            <a href="#contact" class="nav-cta">立即联系</a>
+
+            <!-- 设置按钮：切换到外观设置视图 -->
+            <a href="#settings" class="icon-btn" title="外观设置" aria-label="打开外观设置">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h9M17 17h3" />
+                <circle cx="15" cy="7" r="2" />
+                <circle cx="9" cy="12" r="2" />
+                <circle cx="15" cy="17" r="2" />
+              </svg>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+              <span></span><span></span><span></span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- 首屏 -->
+      <section class="hero" id="top">
+        <div class="container hero-inner">
+          <div class="hero-badge"><i></i> 双黄集团 · 官方门户网站</div>
+
+          <h1>双黄网<br />让每一次点击<em>都有价值</em></h1>
+
+          <p>
+            双黄集团官方网页——我们精选优质互联网平台，涵盖编程学习、休闲娱乐、
+            效率工具与开源社区，为学习、创作与娱乐提供一站式入口。
+          </p>
+
+          <div class="hero-actions">
+            <a href="#resources" class="btn btn-primary">
+              浏览资源导航
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
+
+            <!-- 双黄工作室入口 -->
+            <a href="https://shequ.codemao.cn/" target="_blank" rel="noopener" class="btn btn-studio">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 21V4a1 1 0 0 1 1-1h9l-1.6 4.2L14 11.4H5" />
+                <path d="M4 21h16" />
+              </svg>
+              双黄工作室
+            </a>
+
+            <a href="#contact" class="btn btn-ghost">联系我们</a>
+          </div>
+
+          <p class="hero-hint">
+            我们的官方工作室主页位于编程猫社区 ——
+            <a href="https://shequ.codemao.cn/" target="_blank" rel="noopener">立即前往双黄工作室</a>
+          </p>
+
+          <div class="hero-stats">
+            <div><strong>4</strong><span>精选合作平台</span></div>
+            <div><strong>24h</strong><span>在线响应</span></div>
+            <div><strong>100%</strong><span>免费开放使用</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 关于我们 / 工作室介绍 -->
+      <section class="section" id="about">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-tag">About Us</span>
+            <h2>关于双黄工作室</h2>
+            <p>
+              双黄工作室是一个专注在 2D 引擎上制作 3D 游戏的工作室，成立于 2023 年。
+              <span id="studioTenure">3 年间，我们</span>不断发掘引擎潜力，用有限的技术框架承载无限的创意表达。
+            </p>
+          </div>
+
+          <div class="features">
+            <div class="feature reveal">
+              <div class="feature-icon">🎮</div>
+              <h3>2D 引擎深耕</h3>
+              <p>长期扎根 2D 引擎生态，深入理解其渲染机制与逻辑组织方式。</p>
+            </div>
+            <div class="feature reveal">
+              <div class="feature-icon">🧊</div>
+              <h3>3D 游戏探索</h3>
+              <p>在 2D 引擎上实现三维视觉与玩法，把平面框架变成立体舞台。</p>
+            </div>
+            <div class="feature reveal">
+              <div class="feature-icon">🛠️</div>
+              <h3>持续发掘潜力</h3>
+              <p>自成立以来不断研究引擎特性，把技术限制转化为创作灵感。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 资源导航 -->
+      <section class="section links-section" id="resources">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-tag">Resources</span>
+            <h2>资源导航</h2>
+            <p>点击下方卡片，直达双黄网精选的优质平台。</p>
+          </div>
+
+          <div class="cards">
+            <!-- 编程猫社区 -->
+            <a class="card reveal" href="https://shequ.codemao.cn/" target="_blank" rel="noopener">
+              <div class="card-top">
+                <span class="card-icon">🐱</span>
+                <div>
+                  <h3>编程猫社区</h3>
+                  <span class="site">shequ.codemao.cn</span>
+                </div>
+              </div>
+              <p>面向青少年的图形化编程学习社区，作品分享、创作交流与灵感碰撞。</p>
+              <span class="card-go">
+                前往社区
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </a>
+
+            <!-- Poki -->
+            <a class="card reveal" href="https://poki.com/" target="_blank" rel="noopener">
+              <div class="card-top">
+                <span class="card-icon">🎮</span>
+                <div>
+                  <h3>Poki 小游戏社区</h3>
+                  <span class="site">poki.com</span>
+                </div>
+              </div>
+              <p>无需下载、打开即玩的海量免费在线小游戏合集，随时随地轻松一刻。</p>
+              <span class="card-go">
+                开始游戏
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </a>
+
+            <!-- draw.io -->
+            <a class="card reveal" href="https://draw.io/" target="_blank" rel="noopener">
+              <div class="card-top">
+                <span class="card-icon">📊</span>
+                <div>
+                  <h3>流程图工具</h3>
+                  <span class="site">draw.io</span>
+                </div>
+              </div>
+              <p>专业级在线流程图、思维导图与架构图绘制工具，本地保存、即开即用。</p>
+              <span class="card-go">
+                打开工具
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </a>
+
+            <!-- GitHub -->
+            <a class="card reveal" href="https://github.com/" target="_blank" rel="noopener">
+              <div class="card-top">
+                <span class="card-icon">🐙</span>
+                <div>
+                  <h3>GitHub 社区</h3>
+                  <span class="site">github.com</span>
+                </div>
+              </div>
+              <p>全球最大的开源代码托管平台，汇聚开发者、项目与前沿技术实践。</p>
+              <span class="card-go">
+                进入社区
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 联系方式 -->
+      <section class="contact-section" id="contact">
+        <div class="container">
+          <div class="contact-box reveal">
+            <div class="contact-text">
+              <h2>有合作意向或使用建议？<br />欢迎随时联系双黄集团</h2>
+              <p>添加官方 QQ，我们的工作人员将尽快回复您的问题。</p>
+            </div>
+
+            <div class="contact-actions">
+              <div class="qq-card">
+                <div>
+                  <span class="label">官方 QQ</span>
+                  <span class="value" id="qqValue">1593661551</span>
+                </div>
+                <button class="copy-btn" id="copyBtn" type="button">复制号码</button>
+              </div>
+              <a class="btn btn-primary" href="tencent://message/?uin=1593661551" target="_blank" rel="noopener">
+                发起 QQ 对话
+              </a>
+
+              <!-- 双黄工作室入口 -->
+              <a class="btn btn-studio" href="https://shequ.codemao.cn/" target="_blank" rel="noopener">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 21V4a1 1 0 0 1 1-1h9l-1.6 4.2L14 11.4H5" />
+                  <path d="M4 21h16" />
+                </svg>
+                访问双黄工作室
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 页脚 -->
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-top">
+            <a href="#top" class="brand">
+              <span class="brand-mark">双</span>
+              <span>
+                双黄集团
+                <small>SHUANGHUANG GROUP</small>
+              </span>
+            </a>
+            <nav class="footer-links">
+              <a href="#top">首页</a>
+              <a href="#about">关于我们</a>
+              <a href="#resources">资源导航</a>
+              <a href="#contact">联系我们</a>
+            </nav>
+          </div>
+          <div class="footer-bottom">
+            <span>© <span id="year">2025</span> 双黄集团 · 双黄网 版权所有</span>
+            <span>官方 QQ：1593661551</span>
+          </div>
+        </div>
+      </footer>
+
+    </div><!-- /viewHome -->
+
+    <!-- ================================================== -->
+    <!-- 视图二：外观设置 -->
+    <!-- ================================================== -->
+    <div class="view view-settings" id="viewSettings">
+
+      <!-- 顶部栏 -->
+      <header class="topbar glass">
+        <a href="#" class="back-btn" aria-label="返回首页" id="backBtn">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </a>
+        <h1>外观设置</h1>
+        <span class="mark">双</span>
+      </header>
+
+      <main class="wrap">
+
+        <!-- 实时预览 -->
+        <section class="preview" aria-label="液态玻璃预览">
+          <div class="scene" aria-hidden="true">
+            <span class="orb o1"></span>
+            <span class="orb o2"></span>
+            <span class="orb o3"></span>
+            <span class="grid-lines"></span>
+          </div>
+
+          <div class="preview-bar glass">
+            <span class="pb-brand"><i>双</i>双黄集团</span>
+            <span class="pb-links">首页 · 资源 · 联系</span>
+            <span class="pb-cta">立即联系</span>
+          </div>
+
+          <p class="preview-cap">顶部栏液态玻璃 · 实时预览</p>
+        </section>
+
+        <!-- 设置面板 -->
+        <section class="panel">
+          <div class="panel-head">
+            <h2>液态玻璃透明度</h2>
+            <output id="alphaOut" for="alphaRange">55%</output>
+          </div>
+          <p class="panel-sub">调节顶部栏玻璃的通透程度，调整后自动保存。</p>
+
+          <input id="alphaRange" class="range" type="range"
+                 min="10" max="95" step="1" value="55"
+                 aria-label="液态玻璃透明度" />
+
+          <div class="range-scale">
+            <span>清透</span>
+            <span>标准</span>
+            <span>浓郁</span>
+          </div>
+
+          <div class="presets">
+            <button type="button" data-alpha="0.16">清透</button>
+            <button type="button" data-alpha="0.55" class="active">标准</button>
+            <button type="button" data-alpha="0.84">浓郁</button>
+            <button type="button" class="ghost" id="resetBtn">恢复默认</button>
+          </div>
+
+          <p class="hint">返回首页即可看到新的顶部栏效果，设置会保存在本机浏览器中。</p>
+        </section>
+
+        <a href="#" class="back-link" id="backLink2">← 返回首页</a>
+      </main>
+
+    </div><!-- /viewSettings -->
+
+  </div><!-- /app -->
+
+  <script>
+    /* ============================================================
+       1. 视图切换：滑动过渡 + hash 路由
+       ============================================================ */
+    var app = document.getElementById('app');
+    var viewHome = document.getElementById('viewHome');
+    var viewSettings = document.getElementById('viewSettings');
+    var navLinks = document.getElementById('navLinks');
+    var navToggle = document.getElementById('navToggle');
+
+    var isSettings = false;
+
+    function setSettingsView(on) {
+      if (on === isSettings) return;
+      isSettings = on;
+      app.classList.toggle('is-settings', on);
+      document.title = on ? '外观设置 · 双黄网' : '双黄集团 · 双黄网 | 官方网站';
+      if (on) {
+        /* 进入设置页时回到顶部，避免上次滚动位置残留 */
+        viewSettings.scrollTop = 0;
+      }
+    }
+
+    /* 初始状态：直接访问 #settings 时无动画进入设置页 */
+    var initialHash = location.hash;
+    if (initialHash === '#settings') {
+      app.classList.add('is-settings');
+      isSettings = true;
+      document.title = '外观设置 · 双黄网';
+    }
+
+    /* 首帧后启用过渡，并处理初始锚点 */
+    requestAnimationFrame(function () {
+      app.classList.remove('no-transition');
+      if (initialHash && initialHash !== '#settings') {
+        scrollToSection(initialHash.slice(1));
+      }
+    });
+
+    /* hash 变化（包括浏览器前进/后退） */
+    window.addEventListener('hashchange', function () {
+      setSettingsView(location.hash === '#settings');
+    });
+
+    /* 返回首页：清除 hash 并手动切换，避免触发不必要的滚动 */
+    function goHome(e) {
+      if (e) e.preventDefault();
+      if (location.hash === '#settings') {
+        history.pushState(null, '', location.pathname + location.search);
+        setSettingsView(false);
+      } else if (location.hash) {
+        history.pushState(null, '', location.pathname + location.search);
+      }
+    }
+    document.getElementById('backBtn').addEventListener('click', goHome);
+    document.getElementById('backLink2').addEventListener('click', goHome);
+
+    /* ============================================================
+       2. 锚点滚动：在视图内部平滑滚动到目标区块
+       ============================================================ */
+    function scrollToSection(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var view = el.closest('.view');
+      if (!view) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      var header = view.querySelector('.site-header, .topbar');
+      var offset = header ? header.offsetHeight : 0;
+      var top = el.getBoundingClientRect().top - view.getBoundingClientRect().top
+                + view.scrollTop - offset;
+      view.scrollTo({ top: top, behavior: 'smooth' });
+    }
+
+    /* 拦截首页内所有锚点链接（设置按钮 #settings 除外） */
+    viewHome.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      var href = a.getAttribute('href');
+      if (href === '#settings') return;
+      a.addEventListener('click', function (e) {
+        var id = href.slice(1);
+        if (!id) return;
+        var el = document.getElementById(id);
+        if (!el) return;
+        e.preventDefault();
+        scrollToSection(id);
+        /* 移动端菜单自动收起 */
+        if (navLinks && navLinks.classList.contains('open')) {
+          navLinks.classList.remove('open');
+          if (navToggle) navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+
+    /* ============================================================
+       3. 首页交互：导航滚动阴影、移动菜单、复制 QQ、入场动画、年份
+       ============================================================ */
+    var header = document.getElementById('header');
+    if (header) {
+      var onScroll = function () {
+        header.classList.toggle('scrolled', viewHome.scrollTop > 10);
+      };
+      viewHome.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
+
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', function () {
+        var open = navLinks.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      navLinks.addEventListener('click', function (e) {
+        if (e.target.tagName === 'A') {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    var copyBtn = document.getElementById('copyBtn');
+    var qqValue = document.getElementById('qqValue');
+    if (copyBtn && qqValue) {
+      copyBtn.addEventListener('click', async function () {
+        var text = qqValue.textContent.trim();
+        var done = function () {
+          copyBtn.textContent = '已复制 ✓';
+          setTimeout(function () { copyBtn.textContent = '复制号码'; }, 1600);
+        };
+        try {
+          await navigator.clipboard.writeText(text);
+          done();
+        } catch (err) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); done(); } catch (e) {}
+          document.body.removeChild(ta);
+        }
+      });
+    }
+
+    var reveals = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.14, root: viewHome, rootMargin: '0px 0px -40px 0px' });
+      reveals.forEach(function (el) { io.observe(el); });
+    } else {
+      reveals.forEach(function (el) { el.classList.add('in'); });
+    }
+
+    var yearEl = document.getElementById('year');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    /* ============================================================
+       4. 设置页：透明度滑块、预设、保存与恢复
+       ============================================================ */
+    (function () {
+      var KEY = 'sh_glass_alpha';
+      var DEFAULT = 0.55;
+
+      var root = document.documentElement;
+      var range = document.getElementById('alphaRange');
+      var out = document.getElementById('alphaOut');
+      var presets = Array.prototype.slice.call(document.querySelectorAll('[data-alpha]'));
+      var resetBtn = document.getElementById('resetBtn');
+
+      function clamp(v) {
+        return Math.min(0.95, Math.max(0.10, v));
+      }
+
+      function syncActive(a) {
+        presets.forEach(function (btn) {
+          var v = parseFloat(btn.dataset.alpha);
+          btn.classList.toggle('active', Math.abs(v - a) < 0.005);
+        });
+      }
+
+      function apply(alpha, persist) {
+        var a = clamp(alpha);
+        root.style.setProperty('--glass-alpha', String(a));
+        range.value = Math.round(a * 100);
+        out.textContent = Math.round(a * 100) + '%';
+        syncActive(a);
+
+        if (persist) {
+          try { localStorage.setItem(KEY, String(a)); } catch (e) {}
+        }
+      }
+
+      /* 初始化：读取上次保存的数值 */
+      var initial = DEFAULT;
+      try {
+        var saved = localStorage.getItem(KEY);
+        if (saved !== null && !isNaN(parseFloat(saved))) {
+          initial = clamp(parseFloat(saved));
+        }
+      } catch (e) {}
+      apply(initial, false);
+
+      /* 拖动滑块：实时预览 + 实时保存 */
+      range.addEventListener('input', function () {
+        apply(parseInt(range.value, 10) / 100, true);
+      });
+
+      /* 预设按钮 */
+      presets.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          apply(parseFloat(btn.dataset.alpha), true);
+        });
+      });
+
+      /* 恢复默认 */
+      resetBtn.addEventListener('click', function () {
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        apply(DEFAULT, true);
+      });
+    })();
+
+    /* ============================================================
+       5. 工作室成立年数实时计算
+       ============================================================ */
+    (function () {
+      var FOUNDED_YEAR = 2023;
+      var tenureEl = document.getElementById('studioTenure');
+
+      function updateTenure() {
+        if (!tenureEl) return;
+        var years = new Date().getFullYear() - FOUNDED_YEAR;
+        if (years > 0) {
+          tenureEl.textContent = years + ' 年间，我们';
+        } else {
+          tenureEl.textContent = '成立以来，我们';
+        }
+      }
+
+      updateTenure();
+      /* 每分钟检查一次，跨年后页面无需刷新也能自动更新 */
+      setInterval(updateTenure, 60 * 1000);
+    })();
+  </script>
 </body>
+</html>
