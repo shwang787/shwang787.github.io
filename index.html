@@ -6,7 +6,6 @@
 <title>双黄集团 · 双黄网 | 官方网站</title>
 <meta name="description" content="双黄集团官方门户网站——双黄网，精选优质互联网平台，为学习、创作与娱乐提供一站式入口。" />
 
-<!-- 先于渲染读取玻璃透明度，避免闪烁 -->
 <script>
 (function () {
   try {
@@ -19,7 +18,6 @@
 </script>
 
 <style>
-  /* ============ 基础变量与重置 ============ */
   :root {
     --brand: #F5B301;
     --brand-light: #FFD34D;
@@ -32,17 +30,12 @@
     --radius: 18px;
     --shadow-sm: 0 4px 16px rgba(18, 22, 31, .06);
     --shadow-md: 0 14px 40px rgba(18, 22, 31, .10);
-
-    /* 液态玻璃参数：透明度由设置页实时控制 */
     --glass-alpha: .55;
     --glass-blur: 28px;
-
-    /* 滑动过渡缓动 */
     --ease-slide: cubic-bezier(.32, .72, 0, 1);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   html { height: 100%; }
 
   body {
@@ -64,7 +57,6 @@
     margin: 0 auto;
   }
 
-  /* ============ 滑动容器与视图 ============ */
   .app {
     position: relative;
     width: 100%;
@@ -91,7 +83,6 @@
   .app.is-settings .view-home { transform: translateX(-25%); }
   .app.is-settings .view-settings { transform: translateX(0); }
 
-  /* 旧页面变暗遮罩：仅在进入设置页时显现 */
   .view-home::before {
     content: "";
     position: fixed;
@@ -104,13 +95,11 @@
   }
   .app.is-settings .view-home::before { opacity: 1; }
 
-  /* 初始加载时禁用过渡，避免闪动 */
   .app.no-transition .view,
   .app.no-transition .view-home::before {
     transition: none !important;
   }
 
-  /* ============ 液态玻璃（实时渲染） ============ */
   .glass {
     position: relative;
     isolation: isolate;
@@ -160,7 +149,6 @@
     pointer-events: none;
   }
 
-  /* ============ 顶部滚动公告条 ============ */
   .ticker {
     background: var(--ink);
     color: var(--brand-light);
@@ -180,7 +168,6 @@
     to   { transform: translateX(-50%); }
   }
 
-  /* ============ 导航栏（液态玻璃） ============ */
   .site-header {
     position: sticky;
     top: 0;
@@ -210,7 +197,6 @@
     white-space: nowrap;
   }
 
-  /* 修改后的图标容器 */
   .brand-mark {
     width: 38px; height: 38px;
     border-radius: 11px;
@@ -279,7 +265,6 @@
     box-shadow: 0 12px 26px rgba(245, 179, 1, .45);
   }
 
-  /* 设置按钮 */
   .icon-btn {
     flex: none;
     width: 42px; height: 42px;
@@ -323,7 +308,6 @@
     transition: .3s;
   }
 
-  /* ============ 首屏 Hero ============ */
   .hero {
     position: relative;
     overflow: hidden;
@@ -443,7 +427,6 @@
     transform: translateY(-3px);
   }
 
-  /* 双黄工作室专属按钮 */
   .btn-studio {
     position: relative;
     color: var(--brand-light);
@@ -477,6 +460,25 @@
   .btn-studio:hover::after {
     color: var(--brand-light);
     background: var(--ink);
+  }
+
+  /* 作品专属按钮 */
+  .btn-game {
+    position: relative;
+    color: var(--ink);
+    background: linear-gradient(135deg, #FFF, #FFE8A3);
+    border: 2px solid var(--brand);
+    box-shadow: 0 0 0 0 rgba(245, 179, 1, .6);
+    animation: gamePulse 2.4s ease-out infinite;
+  }
+  .btn-game:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 16px 38px rgba(245, 179, 1, .55);
+  }
+  @keyframes gamePulse {
+    0% { box-shadow: 0 0 0 0 rgba(245, 179, 1, .6); }
+    70% { box-shadow: 0 0 0 14px rgba(245, 179, 1, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 179, 1, 0); }
   }
 
   .hero-hint {
@@ -516,7 +518,6 @@
     letter-spacing: .5px;
   }
 
-  /* ============ 通用区块 ============ */
   .section { padding: 92px 0; }
   .section-head { max-width: 640px; margin-bottom: 52px; }
   .section-tag {
@@ -540,7 +541,6 @@
     color: var(--muted);
   }
 
-  /* ============ 服务优势 ============ */
   .features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -571,7 +571,6 @@
   .feature h3 { font-size: 18px; font-weight: 700; margin-bottom: 9px; }
   .feature p { font-size: 14.5px; color: var(--muted); }
 
-  /* ============ 资源导航卡片 ============ */
   .links-section {
     background:
       radial-gradient(700px 380px at 100% 0%, rgba(245, 179, 1, .10), transparent 65%),
@@ -655,7 +654,33 @@
   .card:hover .card-go { color: #B8860B; }
   .card:hover .card-go svg { transform: translateX(5px); }
 
-  /* ============ 联系方式 ============ */
+  /* 作品卡片专属样式 */
+  .card-game {
+    border: 2px solid rgba(245, 179, 1, .45);
+    background: linear-gradient(180deg, #FFFDF5 0%, #FFFFFF 100%);
+  }
+  .card-game::before {
+    background: linear-gradient(90deg, #FFD34D, #F5B301, #FFD34D);
+    height: 5px;
+  }
+  .card-game .card-icon {
+    background: linear-gradient(135deg, #FFF4D6, #FFE8A3);
+    border-color: rgba(245, 179, 1, .3);
+  }
+  .card-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: 3px 10px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(245, 179, 1, .35);
+  }
+
   .contact-section { padding: 92px 0; }
 
   .contact-box {
@@ -742,7 +767,6 @@
   .copy-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(245, 179, 1, .42); }
   .copy-btn:active { transform: translateY(0) scale(.97); }
 
-  /* ============ 页脚 ============ */
   .site-footer {
     background: var(--ink);
     color: rgba(255, 255, 255, .6);
@@ -777,7 +801,6 @@
   .site-footer .brand { color: #fff; }
   .site-footer .brand small { color: rgba(255, 255, 255, .45); }
 
-  /* ============ 滚动入场动画 ============ */
   .reveal {
     opacity: 0;
     transform: translateY(22px);
@@ -790,9 +813,9 @@
     .ticker-track { animation: none; }
     .view { transition: none !important; }
     .view-home::before { transition: none !important; }
+    .btn-game { animation: none; }
   }
 
-  /* ============ 设置页样式 ============ */
   .topbar {
     position: sticky;
     top: 0;
@@ -827,7 +850,6 @@
     text-align: center;
   }
 
-  /* 设置页顶部图标 */
   .topbar .mark {
     width: 40px; height: 40px;
     border-radius: 12px;
@@ -845,7 +867,6 @@
     padding-bottom: 60px;
   }
 
-  /* 预览区 */
   .preview {
     position: relative;
     border-radius: 26px;
@@ -882,7 +903,6 @@
     -webkit-mask-image: radial-gradient(70% 70% at 50% 40%, #000, transparent);
   }
 
-  /* 模拟导航栏 */
   .preview-bar {
     display: flex;
     align-items: center;
@@ -903,7 +923,6 @@
     white-space: nowrap;
   }
 
-  /* 预览区的小图标 */
   .pb-brand i {
     width: 30px; height: 30px;
     border-radius: 9px;
@@ -943,7 +962,6 @@
     color: rgba(255, 255, 255, .5);
   }
 
-  /* 设置面板 */
   .panel {
     margin-top: 22px;
     background: #fff;
@@ -980,7 +998,6 @@
     margin-bottom: 22px;
   }
 
-  /* 滑块 */
   .range {
     -webkit-appearance: none;
     appearance: none;
@@ -1032,7 +1049,6 @@
     letter-spacing: .4px;
   }
 
-  /* 预设 */
   .presets {
     display: flex;
     flex-wrap: wrap;
@@ -1100,7 +1116,6 @@
     box-shadow: 0 12px 26px rgba(18, 22, 31, .12);
   }
 
-  /* ============ 响应式 ============ */
   @media (max-width: 860px) {
     .nav-links {
       position: absolute;
@@ -1146,7 +1161,6 @@
 
 <body>
 
-  <!-- 液态玻璃折射滤镜 -->
   <svg class="svg-defs" aria-hidden="true" focusable="false">
     <filter id="liquidRefract" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="2" seed="9" result="noise" />
@@ -1163,7 +1177,6 @@
     <!-- ================================================== -->
     <div class="view view-home" id="viewHome">
 
-      <!-- 顶部滚动公告 -->
       <div class="ticker" aria-hidden="true">
         <div class="ticker-track">
           <span>双黄网 &nbsp;·&nbsp; 双黄集团官方门户 &nbsp;·&nbsp; 精选优质平台 &nbsp;·&nbsp; 一站式直达 &nbsp;·&nbsp; 用心服务每一位用户 &nbsp;·&nbsp; 双黄网 &nbsp;·&nbsp; 双黄集团官方门户 &nbsp;·&nbsp; 精选优质平台 &nbsp;·&nbsp; 一站式直达 &nbsp;·&nbsp; 用心服务每一位用户 &nbsp;·&nbsp;</span>
@@ -1171,11 +1184,9 @@
         </div>
       </div>
 
-      <!-- 导航栏（液态玻璃） -->
       <header class="site-header glass" id="header">
         <div class="container nav">
           <a href="#top" class="brand">
-            <!-- 替换为图片的图标 -->
             <span class="brand-mark">
               <img src="logo.png" alt="双黄工作室 Logo">
             </span>
@@ -1195,7 +1206,6 @@
           <div class="nav-actions">
             <a href="#contact" class="nav-cta">立即联系</a>
 
-            <!-- 设置按钮：切换到外观设置视图 -->
             <a href="#settings" class="icon-btn" title="外观设置" aria-label="打开外观设置">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1245,6 +1255,19 @@
             </a>
 
             <a href="#contact" class="btn btn-ghost">联系我们</a>
+          </div>
+
+          <!-- 醒目的作品入口按钮 -->
+          <div style="margin-bottom: 40px;">
+            <a href="https://shequ.codemao.cn/mobile/work?workid=238370086" target="_blank" rel="noopener" class="btn btn-game">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 12h4m-2-2v4m7-1h.01M18 10h.01M17 3H7a4 4 0 0 0-4 4v10a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4V7a4 4 0 0 0-4-4z"/>
+              </svg>
+              立即游玩《四边洲行动：3》
+            </a>
+            <p style="margin-top: 12px; font-size: 13px; color: rgba(255,255,255,.45); letter-spacing: .5px;">
+              「一代硬核，战术为王。在四边洲的战场上，每一次移动与射击都是对策略的考验。」
+            </p>
           </div>
 
           <p class="hero-hint">
@@ -1302,6 +1325,26 @@
           </div>
 
           <div class="cards">
+            <!-- 重点推荐：四边洲行动作品卡片 -->
+            <a class="card card-game reveal" href="https://shequ.codemao.cn/mobile/work?workid=238370086" target="_blank" rel="noopener">
+              <span class="card-badge">工作室力作</span>
+              <div class="card-top">
+                <span class="card-icon">🎯</span>
+                <div>
+                  <h3>四边洲行动：3</h3>
+                  <span class="site">一代硬核战术游戏</span>
+                </div>
+              </div>
+              <p>涵盖射击、僵尸逃跑、攻防与剧情四大模式，在 2D 引擎上呈现紧张刺激的战术对抗，用有限的框架承载硬核的玩法表达。</p>
+              <span class="card-go">
+                开始战斗
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </a>
+
             <!-- 编程猫社区 -->
             <a class="card reveal" href="https://shequ.codemao.cn/" target="_blank" rel="noopener">
               <div class="card-top">
@@ -1402,7 +1445,6 @@
                 发起 QQ 对话
               </a>
 
-              <!-- 双黄工作室入口 -->
               <a class="btn btn-studio" href="https://shequ.codemao.cn/" target="_blank" rel="noopener">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                      stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
@@ -1421,7 +1463,6 @@
         <div class="container">
           <div class="footer-top">
             <a href="#top" class="brand">
-              <!-- 替换为图片的图标 -->
               <span class="brand-mark">
                 <img src="logo.png" alt="双黄工作室 Logo">
               </span>
@@ -1451,7 +1492,6 @@
     <!-- ================================================== -->
     <div class="view view-settings" id="viewSettings">
 
-      <!-- 顶部栏 -->
       <header class="topbar glass">
         <a href="#" class="back-btn" aria-label="返回首页" id="backBtn">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1460,7 +1500,6 @@
           </svg>
         </a>
         <h1>外观设置</h1>
-        <!-- 替换为图片的图标 -->
         <span class="mark">
           <img src="logo.png" alt="Logo">
         </span>
@@ -1468,7 +1507,6 @@
 
       <main class="wrap">
 
-        <!-- 实时预览 -->
         <section class="preview" aria-label="液态玻璃预览">
           <div class="scene" aria-hidden="true">
             <span class="orb o1"></span>
@@ -1479,7 +1517,6 @@
 
           <div class="preview-bar glass">
             <span class="pb-brand">
-              <!-- 替换为图片的图标 -->
               <i><img src="logo.png" alt="Logo"></i>
               双黄集团
             </span>
@@ -1490,7 +1527,6 @@
           <p class="preview-cap">顶部栏液态玻璃 · 实时预览</p>
         </section>
 
-        <!-- 设置面板 -->
         <section class="panel">
           <div class="panel-head">
             <h2>液态玻璃透明度</h2>
@@ -1526,9 +1562,6 @@
   </div><!-- /app -->
 
   <script>
-    /* ============================================================
-       1. 视图切换：滑动过渡 + hash 路由
-       ============================================================ */
     var app = document.getElementById('app');
     var viewHome = document.getElementById('viewHome');
     var viewSettings = document.getElementById('viewSettings');
@@ -1543,12 +1576,10 @@
       app.classList.toggle('is-settings', on);
       document.title = on ? '外观设置 · 双黄网' : '双黄集团 · 双黄网 | 官方网站';
       if (on) {
-        /* 进入设置页时回到顶部，避免上次滚动位置残留 */
         viewSettings.scrollTop = 0;
       }
     }
 
-    /* 初始状态：直接访问 #settings 时无动画进入设置页 */
     var initialHash = location.hash;
     if (initialHash === '#settings') {
       app.classList.add('is-settings');
@@ -1556,7 +1587,6 @@
       document.title = '外观设置 · 双黄网';
     }
 
-    /* 首帧后启用过渡，并处理初始锚点 */
     requestAnimationFrame(function () {
       app.classList.remove('no-transition');
       if (initialHash && initialHash !== '#settings') {
@@ -1564,12 +1594,10 @@
       }
     });
 
-    /* hash 变化（包括浏览器前进/后退） */
     window.addEventListener('hashchange', function () {
       setSettingsView(location.hash === '#settings');
     });
 
-    /* 返回首页：清除 hash 并手动切换，避免触发不必要的滚动 */
     function goHome(e) {
       if (e) e.preventDefault();
       if (location.hash === '#settings') {
@@ -1582,9 +1610,6 @@
     document.getElementById('backBtn').addEventListener('click', goHome);
     document.getElementById('backLink2').addEventListener('click', goHome);
 
-    /* ============================================================
-       2. 锚点滚动：在视图内部平滑滚动到目标区块
-       ============================================================ */
     function scrollToSection(id) {
       var el = document.getElementById(id);
       if (!el) return;
@@ -1600,7 +1625,6 @@
       view.scrollTo({ top: top, behavior: 'smooth' });
     }
 
-    /* 拦截首页内所有锚点链接（设置按钮 #settings 除外） */
     viewHome.querySelectorAll('a[href^="#"]').forEach(function (a) {
       var href = a.getAttribute('href');
       if (href === '#settings') return;
@@ -1611,7 +1635,6 @@
         if (!el) return;
         e.preventDefault();
         scrollToSection(id);
-        /* 移动端菜单自动收起 */
         if (navLinks && navLinks.classList.contains('open')) {
           navLinks.classList.remove('open');
           if (navToggle) navToggle.setAttribute('aria-expanded', 'false');
@@ -1619,9 +1642,6 @@
       });
     });
 
-    /* ============================================================
-       3. 首页交互：导航滚动阴影、移动菜单、复制 QQ、入场动画、年份
-       ============================================================ */
     var header = document.getElementById('header');
     if (header) {
       var onScroll = function () {
@@ -1687,9 +1707,6 @@
     var yearEl = document.getElementById('year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-    /* ============================================================
-       4. 设置页：透明度滑块、预设、保存与恢复
-       ============================================================ */
     (function () {
       var KEY = 'sh_glass_alpha';
       var DEFAULT = 0.55;
@@ -1723,7 +1740,6 @@
         }
       }
 
-      /* 初始化：读取上次保存的数值 */
       var initial = DEFAULT;
       try {
         var saved = localStorage.getItem(KEY);
@@ -1733,28 +1749,22 @@
       } catch (e) {}
       apply(initial, false);
 
-      /* 拖动滑块：实时预览 + 实时保存 */
       range.addEventListener('input', function () {
         apply(parseInt(range.value, 10) / 100, true);
       });
 
-      /* 预设按钮 */
       presets.forEach(function (btn) {
         btn.addEventListener('click', function () {
           apply(parseFloat(btn.dataset.alpha), true);
         });
       });
 
-      /* 恢复默认 */
       resetBtn.addEventListener('click', function () {
         try { localStorage.removeItem(KEY); } catch (e) {}
         apply(DEFAULT, true);
       });
     })();
 
-    /* ============================================================
-       5. 工作室成立年数实时计算
-       ============================================================ */
     (function () {
       var FOUNDED_YEAR = 2023;
       var tenureEl = document.getElementById('studioTenure');
