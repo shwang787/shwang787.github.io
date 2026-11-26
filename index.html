@@ -209,15 +209,20 @@
     letter-spacing: .5px;
     white-space: nowrap;
   }
+
+  /* 修改后的图标容器 */
   .brand-mark {
     width: 38px; height: 38px;
     border-radius: 11px;
     display: grid; place-items: center;
-    font-size: 19px; font-weight: 900;
-    color: var(--ink);
-    background: linear-gradient(135deg, var(--brand-light), var(--brand));
-    box-shadow: 0 6px 18px rgba(245, 179, 1, .38);
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
   }
+  .brand-mark img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+
   .brand small {
     display: block;
     font-size: 11px;
@@ -822,15 +827,16 @@
     text-align: center;
   }
 
+  /* 设置页顶部图标 */
   .topbar .mark {
     width: 40px; height: 40px;
     border-radius: 12px;
     display: grid; place-items: center;
-    font-size: 17px; font-weight: 900;
-    color: var(--ink);
-    background: linear-gradient(135deg, var(--brand-light), var(--brand));
-    box-shadow: 0 6px 18px rgba(245, 179, 1, .38);
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
   }
+  .topbar .mark img { width: 100%; height: 100%; object-fit: cover; }
 
   .wrap {
     width: min(920px, 92%);
@@ -896,17 +902,18 @@
     font-size: 15.5px;
     white-space: nowrap;
   }
+
+  /* 预览区的小图标 */
   .pb-brand i {
     width: 30px; height: 30px;
     border-radius: 9px;
     display: grid; place-items: center;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
     font-style: normal;
-    font-size: 14px;
-    font-weight: 900;
-    color: var(--ink);
-    background: linear-gradient(135deg, var(--brand-light), var(--brand));
-    box-shadow: 0 4px 12px rgba(245, 179, 1, .35);
   }
+  .pb-brand i img { width: 100%; height: 100%; object-fit: cover; }
 
   .pb-links {
     display: flex;
@@ -1168,7 +1175,10 @@
       <header class="site-header glass" id="header">
         <div class="container nav">
           <a href="#top" class="brand">
-            <span class="brand-mark">双</span>
+            <!-- 替换为图片的图标 -->
+            <span class="brand-mark">
+              <img src="logo.png" alt="双黄工作室 Logo">
+            </span>
             <span>
               双黄集团
               <small>SHUANGHUANG GROUP</small>
@@ -1411,7 +1421,10 @@
         <div class="container">
           <div class="footer-top">
             <a href="#top" class="brand">
-              <span class="brand-mark">双</span>
+              <!-- 替换为图片的图标 -->
+              <span class="brand-mark">
+                <img src="logo.png" alt="双黄工作室 Logo">
+              </span>
               <span>
                 双黄集团
                 <small>SHUANGHUANG GROUP</small>
@@ -1447,7 +1460,10 @@
           </svg>
         </a>
         <h1>外观设置</h1>
-        <span class="mark">双</span>
+        <!-- 替换为图片的图标 -->
+        <span class="mark">
+          <img src="logo.png" alt="Logo">
+        </span>
       </header>
 
       <main class="wrap">
@@ -1462,7 +1478,11 @@
           </div>
 
           <div class="preview-bar glass">
-            <span class="pb-brand"><i>双</i>双黄集团</span>
+            <span class="pb-brand">
+              <!-- 替换为图片的图标 -->
+              <i><img src="logo.png" alt="Logo"></i>
+              双黄集团
+            </span>
             <span class="pb-links">首页 · 资源 · 联系</span>
             <span class="pb-cta">立即联系</span>
           </div>
@@ -1750,7 +1770,6 @@
       }
 
       updateTenure();
-      /* 每分钟检查一次，跨年后页面无需刷新也能自动更新 */
       setInterval(updateTenure, 60 * 1000);
     })();
   </script>
