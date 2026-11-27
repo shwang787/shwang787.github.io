@@ -47,9 +47,9 @@
     --glass-alpha: .55;
     --glass-blur: 24px;
     
-    /* ============ 核心动画曲线（非线性，极其丝滑） ============ */
+    /* 核心动画曲线（非线性，极其丝滑） */
     --ease-slide: cubic-bezier(.32, .72, 0, 1);
-    --ease-smooth: cubic-bezier(.25, 1, .5, 1); /* 用于渐显和悬停 */
+    --ease-smooth: cubic-bezier(.25, 1, .5, 1);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -181,15 +181,49 @@
   }
 
   .brand { display: flex; align-items: center; gap: 11px; font-weight: 800; font-size: 19px; letter-spacing: .5px; white-space: nowrap; }
+  
+  /* =========================================
+     Logo 3D 翻转时光机
+  ========================================= */
   .brand-mark {
     width: 38px; height: 38px;
     border-radius: 11px;
-    display: grid; place-items: center;
+    position: relative;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+  
+  .logo-flipper {
+    position: relative;
+    width: 100%; height: 100%;
+    transition: transform .8s cubic-bezier(.25,1,.5,1);
+    transform-style: preserve-3d;
+  }
+  
+  .brand-mark.flipped .logo-flipper {
+    transform: rotateY(180deg);
+  }
+  
+  .logo-front, .logo-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 11px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     overflow: hidden;
     background: #000;
     box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
   }
-  .brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+  
+  .logo-front img, .logo-back img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  
+  .logo-back {
+    transform: rotateY(180deg);
+  }
+  /* ========================================= */
+
   .brand small { display: block; font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 1.4px; line-height: 1; margin-top: 3px; }
 
   .nav-links { display: flex; align-items: center; gap: 24px; font-size: 15px; font-weight: 500; color: var(--muted); }
@@ -278,12 +312,47 @@
   .section-head h2 { font-size: clamp(25px, 3.4vw, 36px); font-weight: 800; letter-spacing: -.5px; line-height: 1.28; margin-bottom: 14px; }
   .section-head p { font-size: 16px; color: var(--muted); }
 
-  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px; }
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px; margin-bottom: 32px; }
   .feature { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 34px 28px; box-shadow: var(--shadow-sm); transition: transform .3s var(--ease-smooth), box-shadow .3s var(--ease-smooth), border-color .3s var(--ease-smooth); }
   .feature:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: rgba(245, 179, 1, .5); }
   .feature-icon { width: 52px; height: 52px; display: grid; place-items: center; font-size: 23px; border-radius: 15px; background: linear-gradient(135deg, rgba(255, 211, 77, .28), rgba(245, 179, 1, .16)); border: 1px solid rgba(245, 179, 1, .28); margin-bottom: 20px; }
   .feature h3 { font-size: 18px; font-weight: 700; margin-bottom: 9px; }
   .feature p { font-size: 14.5px; color: var(--muted); }
+
+  /* ============ 双黄的起源故事卡片 ============ */
+  .origin-story {
+    background: linear-gradient(135deg, #FFFDF5, #FFF7E0);
+    border: 1px solid rgba(245, 179, 1, .3);
+    border-radius: var(--radius);
+    padding: 32px 36px;
+    box-shadow: 0 10px 30px rgba(245, 179, 1, .08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .origin-story::before {
+    content: "“";
+    position: absolute;
+    top: -20px;
+    left: 20px;
+    font-size: 120px;
+    color: rgba(245, 179, 1, .1);
+    font-family: serif;
+    line-height: 1;
+  }
+  .origin-story p {
+    font-size: 15.5px;
+    color: var(--ink-soft);
+    position: relative;
+    z-index: 1;
+    text-indent: 2em;
+  }
+  .origin-story strong {
+    color: #B8860B;
+    font-weight: 800;
+  }
 
   /* ============ 创始人名单 ============ */
   .team-section { background: var(--bg); }
@@ -353,7 +422,7 @@
   .site-footer .brand small { color: rgba(255, 255, 255, .45); }
 
   /* =========================================
-     板块渐显效果（保持原样，但允许重复触发）
+     板块渐显效果（可重复触发）
   ========================================= */
   .reveal { 
     opacity: 0; 
@@ -378,8 +447,8 @@
   .back-btn { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; color: var(--ink); background: rgba(255, 255, 255, .55); border: 1px solid rgba(255, 255, 255, .75); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 6px 16px rgba(18, 22, 31, .08); transition: transform .3s var(--ease-smooth), background .3s var(--ease-smooth); }
   .back-btn:hover { transform: translateX(-3px); background: #fff; }
   .topbar h1 { font-size: 17px; font-weight: 800; letter-spacing: .3px; text-align: center; }
-  .topbar .mark { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; overflow: hidden; background: #000; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); }
-  .topbar .mark img { width: 100%; height: 100%; object-fit: cover; }
+  .topbar .mark { width: 40px; height: 40px; border-radius: 12px; position: relative; perspective: 1000px; cursor: pointer; }
+  .topbar .mark .logo-front, .topbar .mark .logo-back { border-radius: 12px; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); }
 
   .wrap { width: min(920px, 92%); margin: 0 auto; padding-top: 26px; padding-bottom: 60px; }
   .preview { position: relative; border-radius: 26px; overflow: hidden; padding: 34px 26px 22px; background: linear-gradient(150deg, #12161F, #1C2333 60%, #12161F); box-shadow: 0 26px 60px rgba(18, 22, 31, .24); }
@@ -391,8 +460,8 @@
   .grid-lines { position: absolute; inset: 0; background-image: linear-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .07) 1px, transparent 1px); background-size: 46px 46px; mask-image: radial-gradient(70% 70% at 50% 40%, #000, transparent); -webkit-mask-image: radial-gradient(70% 70% at 50% 40%, #000, transparent); }
   .preview-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; height: 66px; padding: 0 20px; border-radius: 18px; color: var(--ink); }
   .pb-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15.5px; white-space: nowrap; }
-  .pb-brand i { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; overflow: hidden; background: #000; box-shadow: 0 4px 12px rgba(0, 0, 0, .25); font-style: normal; }
-  .pb-brand i img { width: 100%; height: 100%; object-fit: cover; }
+  .pb-brand i { width: 30px; height: 30px; border-radius: 9px; position: relative; perspective: 1000px; cursor: pointer; font-style: normal; }
+  .pb-brand i .logo-front, .pb-brand i .logo-back { border-radius: 9px; box-shadow: 0 4px 12px rgba(0, 0, 0, .25); }
   .pb-links { display: flex; gap: 18px; font-size: 13.5px; font-weight: 500; color: var(--muted); }
   .pb-cta { padding: 8px 18px; font-size: 13px; font-weight: 700; border-radius: 999px; background: linear-gradient(135deg, var(--brand-light), var(--brand)); box-shadow: 0 6px 16px rgba(245, 179, 1, .32); white-space: nowrap; }
   .preview-cap { position: relative; z-index: 1; margin-top: 18px; text-align: center; font-size: 12.5px; letter-spacing: .6px; color: rgba(255, 255, 255, .5); }
@@ -440,6 +509,7 @@
     .pb-links { display: none; }
     .panel { padding: 24px 20px 22px; }
     .presets button { min-width: 0; flex: 1 1 30%; }
+    .origin-story { padding: 24px 20px; }
   }
 
   @media (max-width: 420px) {
@@ -469,8 +539,12 @@
       <header class="site-header glass" id="header">
         <div class="container nav">
           <a href="#top" class="brand">
-            <span class="brand-mark">
-              <img src="logo.png" alt="双黄工作室 Logo">
+            <!-- Logo 时光机结构 -->
+            <span class="brand-mark" data-logo-flip title="点击唤醒最初的记忆">
+              <span class="logo-flipper">
+                <span class="logo-front"><img src="logo.png" alt="双黄集团 Logo"></span>
+                <span class="logo-back"><img src="old-logo.png" alt="双黄有限公司印章"></span>
+              </span>
             </span>
             <span>
               双黄集团
@@ -562,7 +636,7 @@
         </div>
       </section>
 
-      <!-- 关于我们 -->
+      <!-- 关于我们 & 起源故事 -->
       <section class="section" id="about">
         <div class="container">
           <div class="section-head reveal">
@@ -590,6 +664,14 @@
               <h3>持续发掘潜力</h3>
               <p>自成立以来不断研究引擎特性，把技术限制转化为创作灵感。</p>
             </div>
+          </div>
+
+          <!-- 起源故事卡片 -->
+          <div class="origin-story reveal">
+            <p>三年级那年，两个同姓黄的小男孩在纸上写写画画，其中一人画下了一枚印章：五颗五角星、两个交叉的 H，以及「双黄有限公司」几个字。那一刻，双黄的种子就此埋下。</p>
+            <p>如今我们已经初一，去往了不同的中学。那枚繁琐的印章，化作了由 <strong>S</strong> 与 <strong>H</strong> 正负形构成的极简现代 Logo，公司也升级成了“双黄集团”。</p>
+            <p>时隔一年再次维护这个网站，不仅是因为双黄已经走过了四个年头，更是因为——它是维系我们友谊的纽带。我想让我们的友谊，在这个赛博世界里一直进行下去。</p>
+            <p style="text-align: right; font-weight: 700; color: #B8860B; margin-top: 8px;">👉 点击上方任何 Logo，可以随时唤醒那段最初的记忆。</p>
           </div>
         </div>
       </section>
@@ -775,12 +857,10 @@
               <div class="qq-card">
                 <div>
                   <span class="label">官方 QQ</span>
-                  <!-- 官方 QQ 修改 -->
                   <span class="value" id="qqValue">3527768104</span>
                 </div>
                 <button class="copy-btn" id="copyBtn" type="button">复制号码</button>
               </div>
-              <!-- 跳转链接修改 -->
               <a class="btn btn-primary" href="tencent://message/?uin=3527768104" target="_blank" rel="noopener">
                 发起 QQ 对话
               </a>
@@ -794,8 +874,12 @@
         <div class="container">
           <div class="footer-top">
             <a href="#top" class="brand">
-              <span class="brand-mark">
-                <img src="logo.png" alt="双黄工作室 Logo">
+              <!-- Logo 时光机结构 -->
+              <span class="brand-mark" data-logo-flip title="点击唤醒最初的记忆">
+                <span class="logo-flipper">
+                  <span class="logo-front"><img src="logo.png" alt="双黄集团 Logo"></span>
+                  <span class="logo-back"><img src="old-logo.png" alt="双黄有限公司印章"></span>
+                </span>
               </span>
               <span>
                 双黄集团
@@ -813,7 +897,6 @@
           </div>
           <div class="footer-bottom">
             <span>© <span id="year">2025</span> 双黄集团 · 双黄网 版权所有</span>
-            <!-- 页脚 QQ 修改 -->
             <span>官方 QQ：3527768104</span>
           </div>
         </div>
@@ -833,8 +916,12 @@
           </svg>
         </a>
         <h1>外观设置</h1>
-        <span class="mark">
-          <img src="logo.png" alt="Logo">
+        <!-- Logo 时光机结构 -->
+        <span class="mark" data-logo-flip title="点击唤醒最初的记忆">
+          <span class="logo-flipper">
+            <span class="logo-front"><img src="logo.png" alt="双黄集团 Logo"></span>
+            <span class="logo-back"><img src="old-logo.png" alt="双黄有限公司印章"></span>
+          </span>
         </span>
       </header>
 
@@ -850,7 +937,13 @@
 
           <div class="preview-bar glass">
             <span class="pb-brand">
-              <i><img src="logo.png" alt="Logo"></i>
+              <!-- Logo 时光机结构 -->
+              <i data-logo-flip title="点击唤醒最初的记忆">
+                <span class="logo-flipper">
+                  <span class="logo-front"><img src="logo.png" alt="双黄集团 Logo"></span>
+                  <span class="logo-back"><img src="old-logo.png" alt="双黄有限公司印章"></span>
+                </span>
+              </i>
               双黄集团
             </span>
             <span class="pb-links">首页 · 资源 · 联系</span>
@@ -1004,6 +1097,19 @@
         }
       });
     }
+
+    // ==========================================
+    // Logo 时光机翻转交互
+    // ==========================================
+    document.querySelectorAll('[data-logo-flip]').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        // 阻止父级 <a> 标签的默认跳转
+        if (this.closest('a')) {
+          e.preventDefault();
+        }
+        this.classList.toggle('flipped');
+      });
+    });
 
     // ==========================================
     // 板块渐显效果（可重复触发）
