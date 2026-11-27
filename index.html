@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>双黄集团 · 双黄网 | 官方网站</title>
 <meta name="description" content="双黄工作室官方门户网站，专注在 2D 引擎上制作 3D 游戏。旗下硬核战术游戏《四边洲行动：3》现已上线！" />
 
@@ -63,6 +63,7 @@
     -webkit-font-smoothing: antialiased;
     height: 100%;
     overflow: hidden;
+    touch-action: pan-y; /* 允许垂直滚动，防止 2048 横向滑动冲突 */
   }
 
   a { text-decoration: none; color: inherit; }
@@ -182,9 +183,7 @@
 
   .brand { display: flex; align-items: center; gap: 11px; font-weight: 800; font-size: 19px; letter-spacing: .5px; white-space: nowrap; }
   
-  /* =========================================
-     Logo 3D 翻转时光机（已修复塌陷问题）
-  ========================================= */
+  /* Logo 3D 翻转时光机 */
   .brand-mark {
     width: 38px; height: 38px;
     border-radius: 11px;
@@ -192,7 +191,7 @@
     perspective: 1000px;
     cursor: pointer;
     display: inline-block;
-    flex: none; /* 防止在 flex 布局中被压缩 */
+    flex: none;
   }
   
   .logo-flipper {
@@ -217,7 +216,7 @@
     overflow: hidden;
     background: #000;
     box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
-    display: block; /* 确保块级显示 */
+    display: block;
   }
   
   .logo-front img, .logo-back img {
@@ -229,7 +228,6 @@
     transform: rotateY(180deg);
     -webkit-transform: rotateY(180deg);
   }
-  /* ========================================= */
 
   .brand small { display: block; font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 1.4px; line-height: 1; margin-top: 3px; }
 
@@ -356,10 +354,7 @@
     z-index: 1;
     text-indent: 2em;
   }
-  .origin-story strong {
-    color: #B8860B;
-    font-weight: 800;
-  }
+  .origin-story strong { color: #B8860B; font-weight: 800; }
 
   /* ============ 创始人名单 ============ */
   .team-section { background: var(--bg); }
@@ -405,7 +400,169 @@
   .card-game .card-icon { background: linear-gradient(135deg, #FFF4D6, #FFE8A3); border-color: rgba(245, 179, 1, .3); }
   .card-badge { position: absolute; top: 14px; right: 14px; padding: 3px 10px; font-size: 10.5px; font-weight: 800; letter-spacing: 1px; color: var(--ink); background: linear-gradient(135deg, var(--brand-light), var(--brand)); border-radius: 999px; box-shadow: 0 4px 12px rgba(245, 179, 1, .35); }
 
-  .contact-section { padding: 92px 0; }
+  /* =========================================
+     2048 小游戏专属样式
+  ========================================= */
+  .game-section {
+    background: #fff;
+    border-top: 1px solid var(--line);
+    padding-bottom: 92px;
+  }
+  .game-wrapper {
+    max-width: 400px;
+    margin: 0 auto;
+    background: var(--ink);
+    padding: 20px;
+    border-radius: 22px;
+    box-shadow: 0 20px 50px rgba(18, 22, 31, .25);
+    position: relative;
+    user-select: none;
+  }
+  .game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+  .game-score-box {
+    background: rgba(255,255,255,.1);
+    padding: 8px 16px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,.1);
+  }
+  .game-score-box span:first-child {
+    display: block;
+    font-size: 11px;
+    color: var(--brand-light);
+    letter-spacing: 2px;
+    font-weight: 800;
+  }
+  .game-score-box span:last-child {
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .game-btn {
+    background: linear-gradient(135deg, var(--brand-light), var(--brand));
+    color: var(--ink);
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 800;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(245,179,1,.3);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .game-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(245,179,1,.4); }
+  .game-btn:active { transform: translateY(0); }
+
+  .game-board-container {
+    position: relative;
+    background: rgba(0,0,0,.4);
+    border-radius: 12px;
+    padding: 10px;
+    aspect-ratio: 1;
+  }
+  .game-grid-bg {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%; height: 100%;
+    position: absolute;
+    inset: 0;
+    padding: 10px;
+    z-index: 1;
+  }
+  .grid-cell {
+    background: rgba(255,255,255,.05);
+    border-radius: 8px;
+  }
+  .tile-container {
+    position: absolute;
+    inset: 0;
+    padding: 10px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .tile {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 32px;
+    color: var(--ink);
+    transition: transform 0.15s ease-in-out;
+    will-change: transform;
+  }
+  .tile-inner {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: inherit;
+    animation: appear 0.2s ease-in-out;
+  }
+  @keyframes appear {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .tile-merged { animation: pop 0.2s ease-in-out; }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  /* 2048 配色（黑金主题定制） */
+  .tile-2 .tile-inner { background: #eee4da; color: #776e65; font-size: 36px; }
+  .tile-4 .tile-inner { background: #ede0c8; color: #776e65; font-size: 36px; }
+  .tile-8 .tile-inner { background: #f2b179; color: #f9f6f2; font-size: 36px; }
+  .tile-16 .tile-inner { background: #f59563; color: #f9f6f2; font-size: 32px; }
+  .tile-32 .tile-inner { background: #f67c5f; color: #f9f6f2; font-size: 32px; }
+  .tile-64 .tile-inner { background: #f65e3b; color: #f9f6f2; font-size: 32px; }
+  .tile-128 .tile-inner { background: #edcf72; color: #f9f6f2; font-size: 26px; box-shadow: 0 0 20px rgba(243,215,116,.4); }
+  .tile-256 .tile-inner { background: #edcc61; color: #f9f6f2; font-size: 26px; box-shadow: 0 0 25px rgba(243,215,116,.6); }
+  .tile-512 .tile-inner { background: #edc850; color: #f9f6f2; font-size: 26px; box-shadow: 0 0 30px rgba(243,215,116,.8); }
+  .tile-1024 .tile-inner { background: #edc53f; color: #f9f6f2; font-size: 20px; box-shadow: 0 0 35px rgba(243,215,116,1); }
+  .tile-2048 .tile-inner { background: var(--brand); color: #fff; font-size: 20px; box-shadow: 0 0 40px var(--brand); }
+
+  .game-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(18,22,31,.85);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease;
+    backdrop-filter: blur(4px);
+  }
+  .game-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .game-overlay h3 {
+    font-size: 36px;
+    color: var(--brand-light);
+    margin-bottom: 10px;
+    font-weight: 900;
+  }
+  .game-overlay p {
+    color: #fff;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+  /* ========================================= */
+
+  .contact-section { padding: 92px 0; background: var(--bg); }
   .contact-box { position: relative; overflow: hidden; border-radius: 26px; padding: 62px 54px; color: #fff; background: radial-gradient(600px 340px at 88% 0%, rgba(245, 179, 1, .32), transparent 62%), linear-gradient(150deg, #12161F, #1F2739); box-shadow: 0 26px 60px rgba(18, 22, 31, .22); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 36px; }
   .contact-box::after { content: ""; position: absolute; width: 280px; height: 280px; right: -80px; bottom: -140px; border-radius: 50%; background: rgba(245, 179, 1, .16); filter: blur(50px); pointer-events: none; }
   .contact-text { position: relative; z-index: 1; max-width: 520px; }
@@ -455,7 +612,6 @@
   .back-btn:hover { transform: translateX(-3px); background: #fff; }
   .topbar h1 { font-size: 17px; font-weight: 800; letter-spacing: .3px; text-align: center; }
   
-  /* 设置页顶部 Logo 修复 */
   .topbar .mark { 
     width: 40px; height: 40px; 
     border-radius: 12px; 
@@ -478,7 +634,6 @@
   .preview-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; height: 66px; padding: 0 20px; border-radius: 18px; color: var(--ink); }
   .pb-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15.5px; white-space: nowrap; }
   
-  /* 设置页预览 Logo 修复 */
   .pb-brand i { 
     width: 30px; height: 30px; 
     border-radius: 9px; 
@@ -587,6 +742,7 @@
             <a href="#team">创始人</a>
             <a href="#blog">最新动态</a>
             <a href="#resources">资源导航</a>
+            <a href="#minigame">摸鱼小游戏</a>
             <a href="#contact">联系我们</a>
           </nav>
 
@@ -873,6 +1029,41 @@
         </div>
       </section>
 
+      <!-- 2048 摸鱼小游戏 -->
+      <section class="section game-section" id="minigame">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-tag">Minigame</span>
+            <h2>双黄摸鱼小游戏</h2>
+            <p>开发累了？滑动屏幕或使用方向键，挑战一下 2048 吧！</p>
+          </div>
+
+          <div class="game-wrapper reveal">
+            <div class="game-header">
+              <div class="game-score-box">
+                <span>SCORE</span>
+                <span id="game-score">0</span>
+              </div>
+              <button class="game-btn" id="new-game">重新开始</button>
+            </div>
+            
+            <div class="game-board-container" id="game-board">
+              <!-- 背景格子 -->
+              <div class="game-grid-bg" id="grid-bg"></div>
+              <!-- 移动的方块层 -->
+              <div class="tile-container" id="tile-container"></div>
+              
+              <!-- 游戏结束遮罩 -->
+              <div class="game-overlay" id="game-overlay">
+                <h3 id="overlay-title">游戏结束</h3>
+                <p>你最终得分是 <span id="final-score">0</span></p>
+                <button class="game-btn" onclick="document.getElementById('new-game').click()">再来一局</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- 联系方式 -->
       <section class="contact-section" id="contact">
         <div class="container">
@@ -921,6 +1112,7 @@
               <a href="#team">创始人</a>
               <a href="#blog">最新动态</a>
               <a href="#resources">资源导航</a>
+              <a href="#minigame">摸鱼小游戏</a>
               <a href="#contact">联系我们</a>
             </nav>
           </div>
@@ -1132,10 +1324,7 @@
     // ==========================================
     document.querySelectorAll('[data-logo-flip]').forEach(function(el) {
       el.addEventListener('click', function(e) {
-        // 阻止父级 <a> 标签的默认跳转
-        if (this.closest('a')) {
-          e.preventDefault();
-        }
+        if (this.closest('a')) e.preventDefault();
         this.classList.toggle('flipped');
       });
     });
@@ -1163,6 +1352,9 @@
     var yearEl = document.getElementById('year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+    // ==========================================
+    // 液态玻璃透明度设置逻辑
+    // ==========================================
     (function () {
       var KEY = 'sh_glass_alpha';
       var DEFAULT = 0.55;
@@ -1210,6 +1402,336 @@
         else { tenureEl.textContent = '成立以来，我们'; }
       }
       updateTenure(); setInterval(updateTenure, 60 * 1000);
+    })();
+
+    // ==========================================
+    // 2048 小游戏完整逻辑
+    // ==========================================
+    (function(){
+      const boardEl = document.getElementById('game-board');
+      const gridBg = document.getElementById('grid-bg');
+      const tileContainer = document.getElementById('tile-container');
+      const scoreEl = document.getElementById('game-score');
+      const overlay = document.getElementById('game-overlay');
+      const overlayTitle = document.getElementById('overlay-title');
+      const finalScore = document.getElementById('final-score');
+      const newGameBtn = document.getElementById('new-game');
+
+      let board = [];
+      let score = 0;
+      let isGameOver = false;
+      let hasWon = false;
+      let tileIdCounter = 0;
+
+      // 初始化背景格子
+      for(let i=0; i<16; i++){
+        let cell = document.createElement('div');
+        cell.className = 'grid-cell';
+        gridBg.appendChild(cell);
+      }
+
+      // 计算每个格子的位置和大小
+      function getPositions() {
+        const containerRect = tileContainer.getBoundingClientRect();
+        const padding = 10;
+        const gap = 10;
+        const cellSize = (containerRect.width - padding * 2 - gap * 3) / 4;
+        return { cellSize, gap, padding };
+      }
+
+      function initGame() {
+        board = Array(4).fill(0).map(() => Array(4).fill(0));
+        score = 0;
+        isGameOver = false;
+        hasWon = false;
+        tileIdCounter = 0;
+        updateScore(0);
+        overlay.classList.remove('show');
+        tileContainer.innerHTML = '';
+        addRandomTile();
+        addRandomTile();
+        render();
+      }
+
+      function addRandomTile() {
+        let emptyCells = [];
+        for(let r=0; r<4; r++){
+          for(let c=0; c<4; c++){
+            if(board[r][c] === 0) emptyCells.push({r, c});
+          }
+        }
+        if(emptyCells.length > 0) {
+          let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+          let value = Math.random() < 0.9 ? 2 : 4;
+          board[randomCell.r][randomCell.c] = {
+            value: value,
+            id: tileIdCounter++,
+            isNew: true,
+            mergedFrom: null
+          };
+        }
+      }
+
+      function updateScore(add) {
+        score += add;
+        scoreEl.textContent = score;
+      }
+
+      // 渲染到 DOM
+      function render() {
+        const { cellSize, gap, padding } = getPositions();
+        
+        // 记录当前存在的 DOM，用于移除
+        let existingTiles = {};
+        Array.from(tileContainer.children).forEach(child => {
+          existingTiles[child.dataset.id] = child;
+        });
+
+        for(let r=0; r<4; r++){
+          for(let c=0; c<4; c++){
+            let cell = board[r][c];
+            if(cell !== 0) {
+              let domTile = existingTiles[cell.id];
+              
+              if(!domTile) {
+                // 创建新方块
+                domTile = document.createElement('div');
+                domTile.className = `tile tile-${cell.value}`;
+                domTile.dataset.id = cell.id;
+                domTile.innerHTML = `<div class="tile-inner">${cell.value}</div>`;
+                
+                // 设置位置
+                domTile.style.width = `${cellSize}px`;
+                domTile.style.height = `${cellSize}px`;
+                domTile.style.transform = `translate(${padding + c * (cellSize + gap)}px, ${padding + r * (cellSize + gap)}px)`;
+                
+                tileContainer.appendChild(domTile);
+              } else {
+                // 更新已有方块（移动或合并）
+                domTile.style.transform = `translate(${padding + c * (cellSize + gap)}px, ${padding + r * (cellSize + gap)}px)`;
+                
+                // 如果是合并产生的新值，更新数字和颜色
+                if (domTile.querySelector('.tile-inner').textContent != cell.value) {
+                  domTile.className = `tile tile-${cell.value}`;
+                  domTile.querySelector('.tile-inner').textContent = cell.value;
+                }
+                
+                delete existingTiles[cell.id];
+              }
+            }
+          }
+        }
+
+        // 移除被合并掉的方块
+        for(let id in existingTiles) {
+          existingTiles[id].remove();
+        }
+
+        // 清理合并状态
+        for(let r=0; r<4; r++){
+          for(let c=0; c<4; c++){
+            if(board[r][c] !== 0) {
+              board[r][c].isNew = false;
+            }
+          }
+        }
+      }
+
+      // 核心滑动逻辑
+      function move(direction) {
+        if(isGameOver) return;
+        let moved = false;
+        let boardBefore = JSON.stringify(board);
+
+        let vectors = {
+          0: { r: -1, c: 0 }, // 上
+          1: { r: 0, c: 1 },  // 右
+          2: { r: 1, c: 0 },  // 下
+          3: { r: 0, c: -1 }  // 左
+        };
+        let vector = vectors[direction];
+
+        let traversals = buildTraversals(vector);
+        let r, c;
+
+        // 重置合并状态
+        for(r=0; r<4; r++){
+          for(c=0; c<4; c++){
+            if(board[r][c] !== 0) board[r][c].mergedFrom = null;
+          }
+        }
+
+        traversals.r.forEach(function(row) {
+          traversals.c.forEach(function(col) {
+            let cell = board[row][col];
+            if(cell !== 0) {
+              let { farthest, next } = findFarthestPosition({r: row, c: col}, vector);
+              
+              // 检查是否能合并
+              if(next.r >= 0 && next.r < 4 && next.c >= 0 && next.c < 4 && 
+                 board[next.r][next.c] !== 0 && 
+                 board[next.r][next.c].value === cell.value && 
+                 !board[next.r][next.c].mergedFrom) {
+                
+                // 合并
+                let merged = {
+                  value: cell.value * 2,
+                  id: tileIdCounter++,
+                  isNew: false,
+                  mergedFrom: [cell, board[next.r][next.c]]
+                };
+                board[next.r][next.c] = merged;
+                board[row][col] = 0;
+                cell.r = next.r;
+                cell.c = next.c; // 移动源格子位置用于动画
+                
+                updateScore(merged.value);
+                if(merged.value === 2048) hasWon = true;
+                
+              } else {
+                // 仅移动
+                if(farthest.r !== row || farthest.c !== col) {
+                  board[farthest.r][farthest.c] = cell;
+                  board[row][col] = 0;
+                  cell.r = farthest.r;
+                  cell.c = farthest.c;
+                }
+              }
+            }
+          });
+        });
+
+        if(boardBefore !== JSON.stringify(board)) {
+          moved = true;
+          addRandomTile();
+          
+          // 先让旧元素移动到新位置，然后统一渲染新的 DOM（处理合并消失的动画）
+          render();
+          
+          setTimeout(() => {
+            render(); // 第二次渲染处理合并后的新方块出现
+          }, 150);
+
+          if(checkGameOver()) {
+            isGameOver = true;
+            setTimeout(() => {
+              overlayTitle.textContent = hasWon ? "你赢了！" : "游戏结束";
+              finalScore.textContent = score;
+              overlay.classList.add('show');
+            }, 300);
+          }
+        }
+      }
+
+      function buildTraversals(vector) {
+        let traversals = { r: [], c: [] };
+        for (let pos = 0; pos < 4; pos++) {
+          traversals.r.push(pos);
+          traversals.c.push(pos);
+        }
+        if (vector.r === 1) traversals.r.reverse();
+        if (vector.c === 1) traversals.c.reverse();
+        return traversals;
+      }
+
+      function findFarthestPosition(cell, vector) {
+        let previous;
+        let current = { r: cell.r, c: cell.c };
+        do {
+          previous = current;
+          current = { r: previous.r + vector.r, c: previous.c + vector.c };
+        } while (isWithinBounds(current) && board[current.r][current.c] === 0);
+        
+        return {
+          farthest: previous,
+          next: current
+        };
+      }
+
+      function isWithinBounds(pos) {
+        return pos.r >= 0 && pos.r < 4 && pos.c >= 0 && pos.c < 4;
+      }
+
+      function checkGameOver() {
+        for(let r=0; r<4; r++){
+          for(let c=0; c<4; c++){
+            if(board[r][c] === 0) return false;
+          }
+        }
+        // 检查是否还有可合并的
+        for(let r=0; r<4; r++){
+          for(let c=0; c<4; c++){
+            let val = board[r][c].value;
+            if(c < 3 && board[r][c+1] !== 0 && board[r][c+1].value === val) return false;
+            if(r < 3 && board[r+1][c] !== 0 && board[r+1][c].value === val) return false;
+          }
+        }
+        return true;
+      }
+
+      // 事件监听：键盘
+      document.addEventListener('keydown', function(e) {
+        // 只有在小游戏区域可见时才响应
+        const rect = boardEl.getBoundingClientRect();
+        if(rect.top < window.innerHeight && rect.bottom > 0) {
+          let direction = -1;
+          if(e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') direction = 0;
+          else if(e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') direction = 1;
+          else if(e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') direction = 2;
+          else if(e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') direction = 3;
+
+          if(direction !== -1) {
+            e.preventDefault(); // 防止页面滚动
+            move(direction);
+          }
+        }
+      });
+
+      // 事件监听：触屏滑动
+      let touchStartX = 0;
+      let touchStartY = 0;
+      
+      boardEl.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+      }, { passive: true });
+
+      boardEl.addEventListener('touchend', function(e) {
+        let touchEndX = e.changedTouches[0].screenX;
+        let touchEndY = e.changedTouches[0].screenY;
+        handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
+      }, { passive: false });
+
+      function handleSwipe(startX, startY, endX, endY) {
+        let dx = endX - startX;
+        let dy = endY - startY;
+        let absDx = Math.abs(dx);
+        let absDy = Math.abs(dy);
+
+        if(Math.max(absDx, absDy) > 30) { // 最小滑动距离阈值
+          // 阻止页面默认滚动
+          if (absDx > absDy) { // 横向滑动
+            if (dx > 0) move(1); // 右
+            else move(3); // 左
+          } else { // 纵向滑动
+            if (dy > 0) move(2); // 下
+            else move(0); // 上
+          }
+        }
+      }
+
+      // 阻止 2048 区域拉动刷新
+      boardEl.addEventListener('touchmove', function(e) {
+        if(e.cancelable) e.preventDefault();
+      }, { passive: false });
+
+      newGameBtn.addEventListener('click', initGame);
+
+      // 监听窗口大小变化重新计算位置
+      window.addEventListener('resize', render);
+
+      // 初始化
+      initGame();
     })();
   </script>
 </body>
