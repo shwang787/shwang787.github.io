@@ -4,7 +4,22 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>双黄集团 · 双黄网 | 官方网站</title>
-<meta name="description" content="双黄集团官方门户网站——双黄网，精选优质互联网平台，为学习、创作与娱乐提供一站式入口。" />
+<meta name="description" content="双黄工作室官方门户网站，专注在 2D 引擎上制作 3D 游戏。旗下硬核战术游戏《四边洲行动：3》现已上线！" />
+
+<!-- ============ 社交分享卡片 (Open Graph) ============ -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="双黄集团 · 双黄网 | 官方门户" />
+<meta property="og:description" content="双黄工作室官方门户网站，旗下硬核战术游戏《四边洲行动：3》现已上线！" />
+<!-- 注意：这里的图片必须是完整的网址，且图片尺寸建议正方形或 16:9 -->
+<meta property="og:image" content="https://shwang787.github.io/logo.png" />
+<meta property="og:url" content="https://shwang787.github.io/" />
+<meta property="og:site_name" content="双黄集团" />
+
+<!-- ============ Twitter 卡片 ============ -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="双黄集团 · 双黄网 | 官方门户" />
+<meta name="twitter:description" content="双黄工作室官方门户网站，旗下硬核战术游戏《四边洲行动：3》现已上线！" />
+<meta name="twitter:image" content="https://shwang787.github.io/logo.png" />
 
 <script>
 (function () {
@@ -462,7 +477,6 @@
     background: var(--ink);
   }
 
-  /* 作品专属按钮 */
   .btn-game {
     position: relative;
     color: var(--ink);
@@ -571,6 +585,70 @@
   .feature h3 { font-size: 18px; font-weight: 700; margin-bottom: 9px; }
   .feature p { font-size: 14.5px; color: var(--muted); }
 
+  /* ============ 工作室日志 / Blog 样式 ============ */
+  .blog-section {
+    background: #fff;
+    border-top: 1px solid var(--line);
+  }
+  .blog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .blog-item {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    padding: 24px 30px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .blog-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(245, 179, 1, .4);
+  }
+  .blog-date {
+    flex: none;
+    width: 80px;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--brand);
+    padding-top: 4px;
+  }
+  .blog-content { flex: 1; }
+  .blog-content h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .blog-content p {
+    font-size: 14.5px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .blog-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    background: rgba(245, 179, 1, .12);
+    color: #B8860B;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 999px;
+  }
+
+  @media (max-width: 620px) {
+    .blog-item {
+      flex-direction: column;
+      gap: 10px;
+      padding: 20px;
+    }
+    .blog-date { width: auto; }
+  }
+
   .links-section {
     background:
       radial-gradient(700px 380px at 100% 0%, rgba(245, 179, 1, .10), transparent 65%),
@@ -654,7 +732,6 @@
   .card:hover .card-go { color: #B8860B; }
   .card:hover .card-go svg { transform: translateX(5px); }
 
-  /* 作品卡片专属样式 */
   .card-game {
     border: 2px solid rgba(245, 179, 1, .45);
     background: linear-gradient(180deg, #FFFDF5 0%, #FFFFFF 100%);
@@ -1199,6 +1276,7 @@
           <nav class="nav-links" id="navLinks">
             <a href="#top">首页</a>
             <a href="#about">关于我们</a>
+            <a href="#blog">最新动态</a>
             <a href="#resources">资源导航</a>
             <a href="#contact">联系我们</a>
           </nav>
@@ -1244,7 +1322,6 @@
               </svg>
             </a>
 
-            <!-- 双黄工作室入口 -->
             <a href="https://shequ.codemao.cn/" target="_blank" rel="noopener" class="btn btn-studio">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                    stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
@@ -1257,7 +1334,6 @@
             <a href="#contact" class="btn btn-ghost">联系我们</a>
           </div>
 
-          <!-- 醒目的作品入口按钮 -->
           <div style="margin-bottom: 40px;">
             <a href="https://shequ.codemao.cn/mobile/work?workid=238370086" target="_blank" rel="noopener" class="btn btn-game">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1311,6 +1387,51 @@
               <h3>持续发掘潜力</h3>
               <p>自成立以来不断研究引擎特性，把技术限制转化为创作灵感。</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 工作室日志 (Blog) -->
+      <section class="section blog-section" id="blog">
+        <div class="container">
+          <div class="section-head reveal">
+            <span class="section-tag">DevLog</span>
+            <h2>最新动态</h2>
+            <p>记录双黄工作室的开发进度、版本更新与幕后故事。</p>
+          </div>
+
+          <div class="blog-list">
+            
+            <!-- 博客文章 1 -->
+            <article class="blog-item reveal">
+              <div class="blog-date">2026.03</div>
+              <div class="blog-content">
+                <h3>《四边洲行动：3》重磅更新：新增僵尸逃跑模式</h3>
+                <p>我们为四边洲行动注入了全新的玩法！在原有的硬核射击基础上，加入了紧张刺激的僵尸逃跑模式。优化了寻路算法，僵尸潮将更加智能。</p>
+                <span class="blog-tag">版本更新</span>
+              </div>
+            </article>
+
+            <!-- 博客文章 2 -->
+            <article class="blog-item reveal">
+              <div class="blog-date">2026.01</div>
+              <div class="blog-content">
+                <h3>双黄网官网 V3.0 正式上线，全站拥抱液态玻璃</h3>
+                <p>经过数天的打磨，全新官网终于与大家见面。这次我们引入了类似 iOS 的实时液态玻璃滤镜，并加入了外观设置面板，你可以自由调节透明度！</p>
+                <span class="blog-tag">官网动态</span>
+              </div>
+            </article>
+
+            <!-- 博客文章 3 -->
+            <article class="blog-item reveal">
+              <div class="blog-date">2025.12</div>
+              <div class="blog-content">
+                <h3>双黄工作室成立两周年，感谢一路有你</h3>
+                <p>从 2023 年成立至今，我们一直致力于在 2D 引擎上探索 3D 游戏的边界。感谢所有支持我们的玩家，未来我们会带来更多有趣的作品。</p>
+                <span class="blog-tag">工作室日常</span>
+              </div>
+            </article>
+
           </div>
         </div>
       </section>
@@ -1474,6 +1595,7 @@
             <nav class="footer-links">
               <a href="#top">首页</a>
               <a href="#about">关于我们</a>
+              <a href="#blog">最新动态</a>
               <a href="#resources">资源导航</a>
               <a href="#contact">联系我们</a>
             </nav>
