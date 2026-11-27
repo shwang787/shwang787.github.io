@@ -183,7 +183,7 @@
   .brand { display: flex; align-items: center; gap: 11px; font-weight: 800; font-size: 19px; letter-spacing: .5px; white-space: nowrap; }
   
   /* =========================================
-     Logo 3D 翻转时光机
+     Logo 3D 翻转时光机（已修复塌陷问题）
   ========================================= */
   .brand-mark {
     width: 38px; height: 38px;
@@ -191,36 +191,43 @@
     position: relative;
     perspective: 1000px;
     cursor: pointer;
+    display: inline-block;
+    flex: none; /* 防止在 flex 布局中被压缩 */
   }
   
   .logo-flipper {
-    position: relative;
-    width: 100%; height: 100%;
+    position: absolute;
+    inset: 0;
     transition: transform .8s cubic-bezier(.25,1,.5,1);
     transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
   }
   
   .brand-mark.flipped .logo-flipper {
     transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
   }
   
   .logo-front, .logo-back {
     position: absolute;
     inset: 0;
-    border-radius: 11px;
+    border-radius: inherit;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     overflow: hidden;
     background: #000;
     box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
+    display: block; /* 确保块级显示 */
   }
   
   .logo-front img, .logo-back img {
     width: 100%; height: 100%; object-fit: cover;
+    display: block;
   }
   
   .logo-back {
     transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
   }
   /* ========================================= */
 
@@ -447,7 +454,17 @@
   .back-btn { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; color: var(--ink); background: rgba(255, 255, 255, .55); border: 1px solid rgba(255, 255, 255, .75); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 6px 16px rgba(18, 22, 31, .08); transition: transform .3s var(--ease-smooth), background .3s var(--ease-smooth); }
   .back-btn:hover { transform: translateX(-3px); background: #fff; }
   .topbar h1 { font-size: 17px; font-weight: 800; letter-spacing: .3px; text-align: center; }
-  .topbar .mark { width: 40px; height: 40px; border-radius: 12px; position: relative; perspective: 1000px; cursor: pointer; }
+  
+  /* 设置页顶部 Logo 修复 */
+  .topbar .mark { 
+    width: 40px; height: 40px; 
+    border-radius: 12px; 
+    position: relative; 
+    perspective: 1000px; 
+    cursor: pointer; 
+    display: inline-block;
+    flex: none;
+  }
   .topbar .mark .logo-front, .topbar .mark .logo-back { border-radius: 12px; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); }
 
   .wrap { width: min(920px, 92%); margin: 0 auto; padding-top: 26px; padding-bottom: 60px; }
@@ -460,8 +477,20 @@
   .grid-lines { position: absolute; inset: 0; background-image: linear-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .07) 1px, transparent 1px); background-size: 46px 46px; mask-image: radial-gradient(70% 70% at 50% 40%, #000, transparent); -webkit-mask-image: radial-gradient(70% 70% at 50% 40%, #000, transparent); }
   .preview-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; height: 66px; padding: 0 20px; border-radius: 18px; color: var(--ink); }
   .pb-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15.5px; white-space: nowrap; }
-  .pb-brand i { width: 30px; height: 30px; border-radius: 9px; position: relative; perspective: 1000px; cursor: pointer; font-style: normal; }
+  
+  /* 设置页预览 Logo 修复 */
+  .pb-brand i { 
+    width: 30px; height: 30px; 
+    border-radius: 9px; 
+    position: relative; 
+    perspective: 1000px; 
+    cursor: pointer; 
+    font-style: normal; 
+    display: inline-block;
+    flex: none;
+  }
   .pb-brand i .logo-front, .pb-brand i .logo-back { border-radius: 9px; box-shadow: 0 4px 12px rgba(0, 0, 0, .25); }
+  
   .pb-links { display: flex; gap: 18px; font-size: 13.5px; font-weight: 500; color: var(--muted); }
   .pb-cta { padding: 8px 18px; font-size: 13px; font-weight: 700; border-radius: 999px; background: linear-gradient(135deg, var(--brand-light), var(--brand)); box-shadow: 0 6px 16px rgba(245, 179, 1, .32); white-space: nowrap; }
   .preview-cap { position: relative; z-index: 1; margin-top: 18px; text-align: center; font-size: 12.5px; letter-spacing: .6px; color: rgba(255, 255, 255, .5); }
