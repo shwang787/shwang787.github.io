@@ -63,7 +63,7 @@
     -webkit-font-smoothing: antialiased;
     height: 100%;
     overflow: hidden;
-    touch-action: pan-y; /* 允许垂直滚动，防止 2048 横向滑动冲突 */
+    touch-action: pan-y;
   }
 
   a { text-decoration: none; color: inherit; }
@@ -232,8 +232,8 @@
   .brand small { display: block; font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 1.4px; line-height: 1; margin-top: 3px; }
 
   .nav-links { display: flex; align-items: center; gap: 24px; font-size: 15px; font-weight: 500; color: var(--muted); }
-  .nav-links a { position: relative; padding: 6px 0; transition: color .2s var(--ease-smooth); }
-  .nav-links a::after {
+  .nav-links a, .nav-links button { position: relative; padding: 6px 0; transition: color .2s var(--ease-smooth); background: none; border: none; cursor: pointer; font-family: inherit; font-size: inherit; font-weight: inherit; color: inherit; }
+  .nav-links a::after, .nav-links button::after {
     content: "";
     position: absolute;
     left: 0; bottom: 0;
@@ -242,8 +242,8 @@
     border-radius: 2px;
     transition: width .3s var(--ease-smooth);
   }
-  .nav-links a:hover { color: var(--ink); }
-  .nav-links a:hover::after { width: 100%; }
+  .nav-links a:hover, .nav-links button:hover { color: var(--ink); }
+  .nav-links a:hover::after, .nav-links button:hover::after { width: 100%; }
 
   .nav-actions { display: flex; align-items: center; gap: 12px; }
   .nav-cta {
@@ -400,33 +400,108 @@
   .card-game .card-icon { background: linear-gradient(135deg, #FFF4D6, #FFE8A3); border-color: rgba(245, 179, 1, .3); }
   .card-badge { position: absolute; top: 14px; right: 14px; padding: 3px 10px; font-size: 10.5px; font-weight: 800; letter-spacing: 1px; color: var(--ink); background: linear-gradient(135deg, var(--brand-light), var(--brand)); border-radius: 999px; box-shadow: 0 4px 12px rgba(245, 179, 1, .35); }
 
+  .contact-section { padding: 92px 0; background: var(--bg); }
+  .contact-box { position: relative; overflow: hidden; border-radius: 26px; padding: 62px 54px; color: #fff; background: radial-gradient(600px 340px at 88% 0%, rgba(245, 179, 1, .32), transparent 62%), linear-gradient(150deg, #12161F, #1F2739); box-shadow: 0 26px 60px rgba(18, 22, 31, .22); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 36px; }
+  .contact-box::after { content: ""; position: absolute; width: 280px; height: 280px; right: -80px; bottom: -140px; border-radius: 50%; background: rgba(245, 179, 1, .16); filter: blur(50px); pointer-events: none; }
+  .contact-text { position: relative; z-index: 1; max-width: 520px; }
+  .contact-text h2 { font-size: clamp(24px, 3.2vw, 34px); font-weight: 800; line-height: 1.3; margin-bottom: 14px; }
+  .contact-text p { color: rgba(255, 255, 255, .7); font-size: 15.5px; }
+  .contact-actions { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; min-width: 280px; }
+  .qq-card { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; border-radius: 16px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .16); backdrop-filter: blur(6px); }
+  .qq-card .label { display: block; font-size: 12px; letter-spacing: 1.6px; color: rgba(255, 255, 255, .55); margin-bottom: 2px; }
+  .qq-card .value { font-size: 19px; font-weight: 800; letter-spacing: .8px; color: var(--brand-light); font-variant-numeric: tabular-nums; }
+  .copy-btn { flex: none; padding: 9px 18px; font-size: 13.5px; font-weight: 700; color: var(--ink); background: linear-gradient(135deg, var(--brand-light), var(--brand)); border: none; border-radius: 999px; cursor: pointer; transition: transform .3s var(--ease-smooth), box-shadow .3s var(--ease-smooth); box-shadow: 0 8px 20px rgba(245, 179, 1, .3); }
+  .copy-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(245, 179, 1, .42); }
+  .copy-btn:active { transform: translateY(0) scale(.97); }
+
+  .site-footer { background: var(--ink); color: rgba(255, 255, 255, .6); padding: 46px 0 34px; font-size: 14px; }
+  .footer-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 22px; padding-bottom: 26px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
+  .footer-links { display: flex; flex-wrap: wrap; gap: 26px; }
+  .footer-links a { transition: color .2s var(--ease-smooth); cursor: pointer; }
+  .footer-links a:hover { color: var(--brand-light); }
+  .footer-bottom { padding-top: 22px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 13px; color: rgba(255, 255, 255, .42); }
+  .site-footer .brand { color: #fff; }
+  .site-footer .brand small { color: rgba(255, 255, 255, .45); }
+
   /* =========================================
-     2048 小游戏专属样式
+     2048 悬浮弹窗专属样式
   ========================================= */
-  .game-section {
-    background: #fff;
-    border-top: 1px solid var(--line);
-    padding-bottom: 92px;
-  }
-  .game-wrapper {
-    max-width: 400px;
-    margin: 0 auto;
-    background: var(--ink);
+  .game-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
     padding: 20px;
-    border-radius: 22px;
-    box-shadow: 0 20px 50px rgba(18, 22, 31, .25);
-    position: relative;
-    user-select: none;
   }
+  .game-modal.show {
+    display: flex;
+  }
+  .game-modal-mask {
+    position: absolute;
+    inset: 0;
+    background: rgba(18, 22, 31, 0.6);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    animation: modalFadeIn .3s var(--ease-smooth);
+  }
+  .game-modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background: var(--ink);
+    padding: 24px;
+    border-radius: 26px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: modalPopIn .4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  @keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes modalPopIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .game-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.1);
+    color: #fff;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background .2s, transform .2s;
+    z-index: 10;
+  }
+  .game-modal-close:hover {
+    background: rgba(255,255,255,.2);
+    transform: rotate(90deg);
+  }
+
   .game-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
+    padding-right: 30px; /* 给关闭按钮留空间 */
     color: #fff;
   }
   .game-score-box {
-    background: rgba(255,255,255,.1);
+    background: rgba(255,255,255,.05);
     padding: 8px 16px;
     border-radius: 10px;
     text-align: center;
@@ -462,7 +537,7 @@
 
   .game-board-container {
     position: relative;
-    background: rgba(0,0,0,.4);
+    background: rgba(0,0,0,.3);
     border-radius: 12px;
     padding: 10px;
     aspect-ratio: 1;
@@ -510,13 +585,7 @@
     0% { transform: scale(0); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
   }
-  .tile-merged { animation: pop 0.2s ease-in-out; }
-  @keyframes pop {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.15); }
-    100% { transform: scale(1); }
-  }
-
+  
   /* 2048 配色（黑金主题定制） */
   .tile-2 .tile-inner { background: #eee4da; color: #776e65; font-size: 36px; }
   .tile-4 .tile-inner { background: #ede0c8; color: #776e65; font-size: 36px; }
@@ -562,29 +631,6 @@
   }
   /* ========================================= */
 
-  .contact-section { padding: 92px 0; background: var(--bg); }
-  .contact-box { position: relative; overflow: hidden; border-radius: 26px; padding: 62px 54px; color: #fff; background: radial-gradient(600px 340px at 88% 0%, rgba(245, 179, 1, .32), transparent 62%), linear-gradient(150deg, #12161F, #1F2739); box-shadow: 0 26px 60px rgba(18, 22, 31, .22); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 36px; }
-  .contact-box::after { content: ""; position: absolute; width: 280px; height: 280px; right: -80px; bottom: -140px; border-radius: 50%; background: rgba(245, 179, 1, .16); filter: blur(50px); pointer-events: none; }
-  .contact-text { position: relative; z-index: 1; max-width: 520px; }
-  .contact-text h2 { font-size: clamp(24px, 3.2vw, 34px); font-weight: 800; line-height: 1.3; margin-bottom: 14px; }
-  .contact-text p { color: rgba(255, 255, 255, .7); font-size: 15.5px; }
-  .contact-actions { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; min-width: 280px; }
-  .qq-card { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; border-radius: 16px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .16); backdrop-filter: blur(6px); }
-  .qq-card .label { display: block; font-size: 12px; letter-spacing: 1.6px; color: rgba(255, 255, 255, .55); margin-bottom: 2px; }
-  .qq-card .value { font-size: 19px; font-weight: 800; letter-spacing: .8px; color: var(--brand-light); font-variant-numeric: tabular-nums; }
-  .copy-btn { flex: none; padding: 9px 18px; font-size: 13.5px; font-weight: 700; color: var(--ink); background: linear-gradient(135deg, var(--brand-light), var(--brand)); border: none; border-radius: 999px; cursor: pointer; transition: transform .3s var(--ease-smooth), box-shadow .3s var(--ease-smooth); box-shadow: 0 8px 20px rgba(245, 179, 1, .3); }
-  .copy-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(245, 179, 1, .42); }
-  .copy-btn:active { transform: translateY(0) scale(.97); }
-
-  .site-footer { background: var(--ink); color: rgba(255, 255, 255, .6); padding: 46px 0 34px; font-size: 14px; }
-  .footer-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 22px; padding-bottom: 26px; border-bottom: 1px solid rgba(255, 255, 255, .1); }
-  .footer-links { display: flex; flex-wrap: wrap; gap: 26px; }
-  .footer-links a { transition: color .2s var(--ease-smooth); }
-  .footer-links a:hover { color: var(--brand-light); }
-  .footer-bottom { padding-top: 22px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 13px; color: rgba(255, 255, 255, .42); }
-  .site-footer .brand { color: #fff; }
-  .site-footer .brand small { color: rgba(255, 255, 255, .45); }
-
   /* =========================================
      板块渐显效果（可重复触发）
   ========================================= */
@@ -604,6 +650,7 @@
     .view { transition: none !important; }
     .view-home::before { transition: none !important; }
     .btn-game { animation: none; }
+    .game-modal-mask, .game-modal-content { animation: none !important; }
   }
 
   /* ============ 设置页样式 ============ */
@@ -677,7 +724,7 @@
   @media (max-width: 860px) {
     .nav-links { position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 5%; background: rgba(255, 255, 255, .92); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); border-bottom: 1px solid var(--line); box-shadow: 0 18px 30px rgba(18, 22, 31, .08); display: none; }
     .nav-links.open { display: flex; }
-    .nav-links a { width: 100%; padding: 11px 0; font-size: 15.5px; }
+    .nav-links a, .nav-links button { width: 100%; text-align: left; padding: 11px 0; font-size: 15.5px; }
     .nav-toggle { display: flex; }
     .nav-cta { display: none; }
     .hero { padding: 70px 0 78px; }
@@ -700,6 +747,7 @@
     .hero-stats div strong { font-size: 23px; }
     .btn { width: 100%; }
     .hero-hint { margin-top: -30px; }
+    .game-modal-content { padding: 16px; border-radius: 20px; }
   }
 </style>
 </head>
@@ -742,7 +790,8 @@
             <a href="#team">创始人</a>
             <a href="#blog">最新动态</a>
             <a href="#resources">资源导航</a>
-            <a href="#minigame">摸鱼小游戏</a>
+            <!-- 变成触发按钮 -->
+            <button id="open-game-btn">🎮 摸鱼小游戏</button>
             <a href="#contact">联系我们</a>
           </nav>
 
@@ -1029,41 +1078,6 @@
         </div>
       </section>
 
-      <!-- 2048 摸鱼小游戏 -->
-      <section class="section game-section" id="minigame">
-        <div class="container">
-          <div class="section-head reveal">
-            <span class="section-tag">Minigame</span>
-            <h2>双黄摸鱼小游戏</h2>
-            <p>开发累了？滑动屏幕或使用方向键，挑战一下 2048 吧！</p>
-          </div>
-
-          <div class="game-wrapper reveal">
-            <div class="game-header">
-              <div class="game-score-box">
-                <span>SCORE</span>
-                <span id="game-score">0</span>
-              </div>
-              <button class="game-btn" id="new-game">重新开始</button>
-            </div>
-            
-            <div class="game-board-container" id="game-board">
-              <!-- 背景格子 -->
-              <div class="game-grid-bg" id="grid-bg"></div>
-              <!-- 移动的方块层 -->
-              <div class="tile-container" id="tile-container"></div>
-              
-              <!-- 游戏结束遮罩 -->
-              <div class="game-overlay" id="game-overlay">
-                <h3 id="overlay-title">游戏结束</h3>
-                <p>你最终得分是 <span id="final-score">0</span></p>
-                <button class="game-btn" onclick="document.getElementById('new-game').click()">再来一局</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- 联系方式 -->
       <section class="contact-section" id="contact">
         <div class="container">
@@ -1112,7 +1126,7 @@
               <a href="#team">创始人</a>
               <a href="#blog">最新动态</a>
               <a href="#resources">资源导航</a>
-              <a href="#minigame">摸鱼小游戏</a>
+              <a id="footer-game-btn">摸鱼小游戏</a>
               <a href="#contact">联系我们</a>
             </nav>
           </div>
@@ -1208,6 +1222,38 @@
     </div><!-- /viewSettings -->
 
   </div><!-- /app -->
+
+  <!-- ================================================== -->
+  <!-- 2048 游戏弹窗 Modal -->
+  <!-- ================================================== -->
+  <div class="game-modal" id="gameModal">
+    <div class="game-modal-mask" id="gameModalMask"></div>
+    <div class="game-modal-content">
+      <button class="game-modal-close" id="closeGameBtn" aria-label="关闭游戏">&times;</button>
+      
+      <div class="game-header">
+        <div class="game-score-box">
+          <span>SCORE</span>
+          <span id="game-score">0</span>
+        </div>
+        <button class="game-btn" id="new-game">重新开始</button>
+      </div>
+      
+      <div class="game-board-container" id="game-board">
+        <!-- 背景格子 -->
+        <div class="game-grid-bg" id="grid-bg"></div>
+        <!-- 移动的方块层 -->
+        <div class="tile-container" id="tile-container"></div>
+        
+        <!-- 游戏结束遮罩 -->
+        <div class="game-overlay" id="game-overlay">
+          <h3 id="overlay-title">游戏结束</h3>
+          <p>你最终得分是 <span id="final-score">0</span></p>
+          <button class="game-btn" onclick="document.getElementById('new-game').click()">再来一局</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     var app = document.getElementById('app');
@@ -1405,9 +1451,15 @@
     })();
 
     // ==========================================
-    // 2048 小游戏完整逻辑
+    // 2048 小游戏完整逻辑与弹窗控制
     // ==========================================
     (function(){
+      const modal = document.getElementById('gameModal');
+      const modalMask = document.getElementById('gameModalMask');
+      const openBtn = document.getElementById('open-game-btn');
+      const footerBtn = document.getElementById('footer-game-btn');
+      const closeBtn = document.getElementById('closeGameBtn');
+
       const boardEl = document.getElementById('game-board');
       const gridBg = document.getElementById('grid-bg');
       const tileContainer = document.getElementById('tile-container');
@@ -1422,6 +1474,7 @@
       let isGameOver = false;
       let hasWon = false;
       let tileIdCounter = 0;
+      let isInitialized = false;
 
       // 初始化背景格子
       for(let i=0; i<16; i++){
@@ -1451,6 +1504,7 @@
         addRandomTile();
         addRandomTile();
         render();
+        isInitialized = true;
       }
 
       function addRandomTile() {
@@ -1479,9 +1533,11 @@
 
       // 渲染到 DOM
       function render() {
+        if (!isInitialized && modal.style.display !== 'flex' && !modal.classList.contains('show')) return;
+
         const { cellSize, gap, padding } = getPositions();
+        if (cellSize <= 0) return; // 弹窗隐藏时可能获取不到宽度
         
-        // 记录当前存在的 DOM，用于移除
         let existingTiles = {};
         Array.from(tileContainer.children).forEach(child => {
           existingTiles[child.dataset.id] = child;
@@ -1494,23 +1550,19 @@
               let domTile = existingTiles[cell.id];
               
               if(!domTile) {
-                // 创建新方块
                 domTile = document.createElement('div');
                 domTile.className = `tile tile-${cell.value}`;
                 domTile.dataset.id = cell.id;
                 domTile.innerHTML = `<div class="tile-inner">${cell.value}</div>`;
                 
-                // 设置位置
                 domTile.style.width = `${cellSize}px`;
                 domTile.style.height = `${cellSize}px`;
                 domTile.style.transform = `translate(${padding + c * (cellSize + gap)}px, ${padding + r * (cellSize + gap)}px)`;
                 
                 tileContainer.appendChild(domTile);
               } else {
-                // 更新已有方块（移动或合并）
                 domTile.style.transform = `translate(${padding + c * (cellSize + gap)}px, ${padding + r * (cellSize + gap)}px)`;
                 
-                // 如果是合并产生的新值，更新数字和颜色
                 if (domTile.querySelector('.tile-inner').textContent != cell.value) {
                   domTile.className = `tile tile-${cell.value}`;
                   domTile.querySelector('.tile-inner').textContent = cell.value;
@@ -1522,12 +1574,10 @@
           }
         }
 
-        // 移除被合并掉的方块
         for(let id in existingTiles) {
           existingTiles[id].remove();
         }
 
-        // 清理合并状态
         for(let r=0; r<4; r++){
           for(let c=0; c<4; c++){
             if(board[r][c] !== 0) {
@@ -1537,29 +1587,20 @@
         }
       }
 
-      // 核心滑动逻辑
       function move(direction) {
-        if(isGameOver) return;
+        if(isGameOver || !modal.classList.contains('show')) return;
         let moved = false;
         let boardBefore = JSON.stringify(board);
 
         let vectors = {
-          0: { r: -1, c: 0 }, // 上
-          1: { r: 0, c: 1 },  // 右
-          2: { r: 1, c: 0 },  // 下
-          3: { r: 0, c: -1 }  // 左
+          0: { r: -1, c: 0 }, 1: { r: 0, c: 1 }, 2: { r: 1, c: 0 }, 3: { r: 0, c: -1 }
         };
         let vector = vectors[direction];
 
         let traversals = buildTraversals(vector);
         let r, c;
 
-        // 重置合并状态
-        for(r=0; r<4; r++){
-          for(c=0; c<4; c++){
-            if(board[r][c] !== 0) board[r][c].mergedFrom = null;
-          }
-        }
+        for(r=0; r<4; r++){ for(c=0; c<4; c++){ if(board[r][c] !== 0) board[r][c].mergedFrom = null; } }
 
         traversals.r.forEach(function(row) {
           traversals.c.forEach(function(col) {
@@ -1567,34 +1608,23 @@
             if(cell !== 0) {
               let { farthest, next } = findFarthestPosition({r: row, c: col}, vector);
               
-              // 检查是否能合并
               if(next.r >= 0 && next.r < 4 && next.c >= 0 && next.c < 4 && 
                  board[next.r][next.c] !== 0 && 
                  board[next.r][next.c].value === cell.value && 
                  !board[next.r][next.c].mergedFrom) {
                 
-                // 合并
-                let merged = {
-                  value: cell.value * 2,
-                  id: tileIdCounter++,
-                  isNew: false,
-                  mergedFrom: [cell, board[next.r][next.c]]
-                };
+                let merged = { value: cell.value * 2, id: tileIdCounter++, isNew: false, mergedFrom: [cell, board[next.r][next.c]] };
                 board[next.r][next.c] = merged;
                 board[row][col] = 0;
-                cell.r = next.r;
-                cell.c = next.c; // 移动源格子位置用于动画
-                
+                cell.r = next.r; cell.c = next.c;
                 updateScore(merged.value);
                 if(merged.value === 2048) hasWon = true;
                 
               } else {
-                // 仅移动
                 if(farthest.r !== row || farthest.c !== col) {
                   board[farthest.r][farthest.c] = cell;
                   board[row][col] = 0;
-                  cell.r = farthest.r;
-                  cell.c = farthest.c;
+                  cell.r = farthest.r; cell.c = farthest.c;
                 }
               }
             }
@@ -1604,13 +1634,8 @@
         if(boardBefore !== JSON.stringify(board)) {
           moved = true;
           addRandomTile();
-          
-          // 先让旧元素移动到新位置，然后统一渲染新的 DOM（处理合并消失的动画）
           render();
-          
-          setTimeout(() => {
-            render(); // 第二次渲染处理合并后的新方块出现
-          }, 150);
+          setTimeout(() => { render(); }, 150);
 
           if(checkGameOver()) {
             isGameOver = true;
@@ -1625,40 +1650,25 @@
 
       function buildTraversals(vector) {
         let traversals = { r: [], c: [] };
-        for (let pos = 0; pos < 4; pos++) {
-          traversals.r.push(pos);
-          traversals.c.push(pos);
-        }
+        for (let pos = 0; pos < 4; pos++) { traversals.r.push(pos); traversals.c.push(pos); }
         if (vector.r === 1) traversals.r.reverse();
         if (vector.c === 1) traversals.c.reverse();
         return traversals;
       }
 
       function findFarthestPosition(cell, vector) {
-        let previous;
-        let current = { r: cell.r, c: cell.c };
+        let previous, current = { r: cell.r, c: cell.c };
         do {
           previous = current;
           current = { r: previous.r + vector.r, c: previous.c + vector.c };
         } while (isWithinBounds(current) && board[current.r][current.c] === 0);
-        
-        return {
-          farthest: previous,
-          next: current
-        };
+        return { farthest: previous, next: current };
       }
 
-      function isWithinBounds(pos) {
-        return pos.r >= 0 && pos.r < 4 && pos.c >= 0 && pos.c < 4;
-      }
+      function isWithinBounds(pos) { return pos.r >= 0 && pos.r < 4 && pos.c >= 0 && pos.c < 4; }
 
       function checkGameOver() {
-        for(let r=0; r<4; r++){
-          for(let c=0; c<4; c++){
-            if(board[r][c] === 0) return false;
-          }
-        }
-        // 检查是否还有可合并的
+        for(let r=0; r<4; r++){ for(let c=0; c<4; c++){ if(board[r][c] === 0) return false; } }
         for(let r=0; r<4; r++){
           for(let c=0; c<4; c++){
             let val = board[r][c].value;
@@ -1669,11 +1679,9 @@
         return true;
       }
 
-      // 事件监听：键盘
+      // 键盘事件
       document.addEventListener('keydown', function(e) {
-        // 只有在小游戏区域可见时才响应
-        const rect = boardEl.getBoundingClientRect();
-        if(rect.top < window.innerHeight && rect.bottom > 0) {
+        if (modal.classList.contains('show')) {
           let direction = -1;
           if(e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') direction = 0;
           else if(e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') direction = 1;
@@ -1681,16 +1689,14 @@
           else if(e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') direction = 3;
 
           if(direction !== -1) {
-            e.preventDefault(); // 防止页面滚动
+            e.preventDefault();
             move(direction);
           }
         }
       });
 
-      // 事件监听：触屏滑动
-      let touchStartX = 0;
-      let touchStartY = 0;
-      
+      // 触屏滑动
+      let touchStartX = 0, touchStartY = 0;
       boardEl.addEventListener('touchstart', function(e) {
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
@@ -1699,39 +1705,48 @@
       boardEl.addEventListener('touchend', function(e) {
         let touchEndX = e.changedTouches[0].screenX;
         let touchEndY = e.changedTouches[0].screenY;
-        handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
-      }, { passive: false });
-
-      function handleSwipe(startX, startY, endX, endY) {
-        let dx = endX - startX;
-        let dy = endY - startY;
+        let dx = touchEndX - touchStartX;
+        let dy = touchEndY - touchStartY;
         let absDx = Math.abs(dx);
         let absDy = Math.abs(dy);
 
-        if(Math.max(absDx, absDy) > 30) { // 最小滑动距离阈值
-          // 阻止页面默认滚动
-          if (absDx > absDy) { // 横向滑动
-            if (dx > 0) move(1); // 右
-            else move(3); // 左
-          } else { // 纵向滑动
-            if (dy > 0) move(2); // 下
-            else move(0); // 上
-          }
+        if(Math.max(absDx, absDy) > 30) {
+          if (absDx > absDy) { if (dx > 0) move(1); else move(3); }
+          else { if (dy > 0) move(2); else move(0); }
         }
-      }
+      }, { passive: false });
 
-      // 阻止 2048 区域拉动刷新
+      // 阻止弹窗内部滑动导致背景跟着滚
       boardEl.addEventListener('touchmove', function(e) {
         if(e.cancelable) e.preventDefault();
       }, { passive: false });
 
+      // 控制弹窗显示隐藏
+      function openModal() {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // 防止背景滚动
+        if (!isInitialized) {
+          initGame();
+        } else {
+          setTimeout(render, 50); // 稍等 DOM 渲染后重新计算大小
+        }
+      }
+
+      function closeModal() {
+        modal.classList.remove('show');
+        document.body.style.overflow = ''; // 恢复滚动
+      }
+
+      if(openBtn) openBtn.addEventListener('click', openModal);
+      if(footerBtn) footerBtn.addEventListener('click', openModal);
+      if(closeBtn) closeBtn.addEventListener('click', closeModal);
+      if(modalMask) modalMask.addEventListener('click', closeModal);
       newGameBtn.addEventListener('click', initGame);
 
       // 监听窗口大小变化重新计算位置
-      window.addEventListener('resize', render);
-
-      // 初始化
-      initGame();
+      window.addEventListener('resize', () => {
+        if (modal.classList.contains('show')) render();
+      });
     })();
   </script>
 </body>
